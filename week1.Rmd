@@ -1,0 +1,106 @@
+---
+title: 'Survival Analysis Using R'
+output: 
+  html_document:
+    toc: yes
+---
+## Introduction
+
+This lab serves as an introduction to using R for survival analysis. 
+
+First we will need to load the required packages. 
+
+```{r}
+#install.packages(survival)
+#install.packages(KMsurv)
+library(survival)  # loading survival functions into R
+library(KMsurv)    # datasets from Klein and Moeschberger textbook
+```
+
+We will be using datasets from Klein and Moeschberger's *Survival Analysis: Techniques for Censored and Truncated Data 2ed*. Let's load the breast cancer trial dataset from section 1.5.
+
+```{r}
+#After you load KMsurv
+data(btrial)
+help(btrial) # Info about the dataset.
+head(btrial) # First 6 rows of the dataset.
+```
+
+time: Time to death or on-study time, months
+death: Death indicator (0=alive, 1=dead)
+im: Immunohistochemical response (1=negative, 2=positive)
+
+## The Surv Object
+
+Before we start fitting a model to the data, we must first create a ```Surv``` object in ```R```. Two inputs are needed to create this object, a vector of observed survival times, and a corresponding vector of censoring indicators. It is standard that uncensored events are labeled as "1", and censored events are "0" for the censoring indicators. The Surv object identifies to ```R``` which event times should be treated as censored. For the ```btrial``` dataset, it will be the time, death columns. To extract these, we can use the ```$``` symbol.
+
+```{r}
+help(Surv)
+Surv(btrial$time, btrial$death) # What does this tell you?
+```
+
+##Fitting a Parametric Survival Regression Model 
+We will discuss how to fit what are more commonly known as accelerated failure time models later in the course. A very brief introduction will be given here as a toy example.
+
+Much like in linear regression where we need to assume normality, for parametric survival models we need to assume that the survival time follows a certain distribution. The most common assumptions are the exponential, and Weibulll. Others include, but are not limited to, log-logistic, log-normal, and generalized gamma. The survival function for the exponential distribution is
+$$S(t) = \exp(-\lambda t), \hspace{.2in} t > 0, \lambda > 0.$$
+For the Weibull distribution we have
+$$S(t) = \exp\{-(\lambda t)^\alpha\} \hspace{.2in} t > 0, \lambda > 0, \alpha > 0.$$
+
+Note that the exponential distribution is a special case of the Weibull distribution where $\alpha = 1$. To fit a parametric survival model we will use the ```survreg( )``` command from the survival package. The functionality is very similar to that of ```lm( )``` for linear regression. 
+
+```{r}
+#Fitting an intercept-only model (ie. No covariates)
+help(survreg)
+
+fit.exp <- survreg(Surv(btrial$time, btrial$death) ~ 1, dist = "exponential")
+
+fit.wei <- survreg(Surv(btrial$time, btrial$death) ~ 1, dist = "weibull")
+```
+
+You can use the ```summary( )``` command to extract p-values, estimates, etc. 
+
+**Question:** How can one test if an exponential models fits better than a Weibull model?
+
+```{r}
+#Results:
+summary(fit.exp); summary(fit.wei)
+
+ls(fit.exp) #What we can extract from this object
+```
+
+Note that we get estimates for the intercept and scale term. However, these aren't estimates of $\lambda$ and $\alpha$, which are generally of interest. There is a relationship however.
+
+$$\hat{\lambda} = \exp(-intercept)$$
+$$\hat{\alpha} = \frac{1}{scale}$$
+Other distributional assumptions of observed survival times:
+```{r}
+fit.gau <- survreg(Surv(btrial$time, btrial$death) ~ 1, dist = "gaussian")
+summary(fit.gau)
+```
+```{r}
+fit.logit <- survreg(Surv(btrial$time, btrial$death) ~ 1, dist = "logistic")
+summary(fit.logit)
+```
+```{r}
+fit.lognorm <- survreg(Surv(btrial$time, btrial$death) ~ 1, dist = "lognormal")
+summary(fit.lognorm)
+```
+
+**Question:** How can we estimate standard errors for $\hat{\lambda}$ and $\hat{\alpha}$?
+
+###Adding Covariates 
+
+We previously fit an intercept-only model. What if we were interested in adding covariates? We can add covariates similarly to how we would when using ```lm```. 
+
+```{r}
+## An expoential survival model
+#Let’s re-parametrize im.
+btrial$newim <- ifelse(btrial$im == 1, 1, 0)
+survreg(Surv(time,death)~newim, data = btrial, dist = "exponential")
+```
+
+```{r}
+## A weibull survival model
+survreg(Surv(time,death)~newim, data = btrial, dist = "weibull")
+```
