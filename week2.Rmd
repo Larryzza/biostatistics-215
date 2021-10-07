@@ -1,0 +1,117 @@
+---
+title: "Lab2"
+author: "Shanpeng Li"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(survival) 
+library(KMsurv)
+```
+## Parametric Regression Models
+We will first discuss parametric regression models for right-censored data. There are two common formulations: the accelerated failure time model representation, and the log-linear model representation. 
+
+The log-linear representation assumes a linear relationship between the covariates and the log failure time. That is,
+$$Y = \log(T) = \mu + \gamma^T\mathbf{Z} + \sigma W,$$
+
+where $\gamma^T$is a vector of regression covariates, under the log-linear reprensetation, and $W$ is the error distribution. The parameters $\mu$ and $\sigma$ are the intercept and scale parameters, respectively. The most model assumptions are the Weibull, log-logistic, and log-normal models and the distribution of $W$ which distributional assumption we are using. 
+
+The accelerated failure time model is written as
+$$S(x|\mathbf{Z}) = S_0(\exp(\boldsymbol{\theta}^T\mathbf{Z})x)$$
+
+for all $x$. The exponential factor $\exp(\boldsymbol{\theta}^T\mathbf{Z})$ is known as the acceleration factor. The second representation is
+$$Y = \log(T) = \mu + \boldsymbol{\gamma}^T\mathbf{Z} + \sigma W,$$
+
+where $W$ is the error distribution. Under certain assumptions, these two representations are closely related and given one set of covariates, we can find the corresponding covariate values for the second representation (see text 394). The most common parametric survival models include the exponential, Weibull, log-logistic, and log-normal models. 
+
+To run these in ```R```, we may use the ```survreg``` command and specify the distribution of interest through the ```dist``` argument. Note that, the parameter estimates that are given in ```R``` are in terms of the log-linear model representation.
+
+### Exponential Regression Model
+Below is an example using Example 12.2 in the book.
+```{r}
+library(survival)  # loading survival functions into R
+library(KMsurv)    # datasets from Klein and Moeschberger textbook
+#Example 12.2
+data(larynx, package= "KMsurv")
+
+fit.12.2.exp <- survreg(Surv(time, delta) ~ factor(stage) + age, 
+                       data = larynx, dist = "exponential")
+```
+
+```R``` gives us the estimated values of $\mu$ and $\boldsymbol{\gamma}$ but we can find $\lambda$ and $\boldsymbol{\theta}$ through the following relationships: $\hat{\lambda} = \exp(-\hat{\mu})$ and $\boldsymbol{\hat{\theta}} = -\boldsymbol{\hat{\gamma}}$. Variance and covriance estimates can be found through the delta method.
+
+```{r}
+summary(fit.12.2.exp) #Log-linear Representation
+
+mu    <- fit.12.2.exp$coefficients[1]
+gamma <- fit.12.2.exp$coefficients[2:5]
+
+#Parameter Estimates (Exponential Assumption):
+lambda   <- exp(-mu) 
+
+#Parameter Estimates (AFT Model)
+theta  <- -gamma; theta
+
+rm(fit.12.2.exp, mu, gamma, lambda, theta)
+```
+
+### Weibull Regression Model
+Below is an example using Example 12.2 in the book.
+```{r}
+library(survival)  # loading survival functions into R
+library(KMsurv)    # datasets from Klein and Moeschberger textbook
+#Example 12.2
+data(larynx, package= "KMsurv")
+
+fit.12.2.wb <- survreg(Surv(time, delta) ~ factor(stage) + age, 
+                       data = larynx, dist = "weibull")
+```
+
+```R``` gives us the estimated values of $\mu$, $\sigma$, and $\boldsymbol{\gamma}$ but we can find $\lambda$, $\alpha$, and $\boldsymbol{\theta}$ through the following relationships: $\hat{\lambda} = \exp(-\hat{\mu}/\hat{\sigma})$, $\hat{\alpha} = 1/\hat{\sigma}$, and $\boldsymbol{\hat{\theta}} = -\boldsymbol{\hat{\gamma}}$. Variance and covriance estimates can be found through the delta method.
+
+```{r}
+summary(fit.12.2.wb) #Log-linear Representation
+
+mu    <- fit.12.2.wb$coefficients[1]
+gamma <- fit.12.2.wb$coefficients[2:5]
+sigma <- fit.12.2.wb$scale
+
+#Parameter Estimates (Weibull Assumption):
+lambda   <- exp(-mu / sigma) #Type in book (.02 not .002)
+alpha    <- 1 / sigma
+
+#Parameter Estimates (AFT Model)
+theta  <- -gamma; theta
+
+rm(fit.12.2.wb, mu, gamma, sigma, alpha, lambda, theta)
+```
+
+Using the AFT model representation $\hat{\theta}_3 = 1.54$. Therefore holding age constant, the median survival for a patient in stage 1 is $\exp(1.54) = 4.68$ times that of a patient in stage 4. Likewise we can use $\hat{\gamma}_3 = -1.54$. In otherwords, holding age constant, the median survival for a patient in stage 4 is $exp(-1.54) = .213$ times that of a patient in stage 1. 
+
+### Log-normal Regression Model 
+Next we will run the same two models using a log-logistic assumption. 
+```{r}
+#Log-Logistic Distribution
+fit.12.2.ln <- survreg(Surv(time, delta) ~ factor(stage) + age, data = larynx,
+                       dist = "lognormal")
+summary(fit.12.2.ln)
+mu    <- fit.12.2.ln$coefficients[1]
+gamma <- fit.12.2.ln$coefficients[2:5]
+sigma <- fit.12.2.ln$scale
+```
+
+We need to obtain the unknown parameters of log-normal AFT model, including $\mu$, $\boldsymbol{\gamma}$, $\theta$ and $\sigma$.
+```{r}
+#Parameter Estimates (Log-normal Assumption):
+mu
+gamma
+sigma
+#Parameter Estimates (AFT Model)
+theta <- -gamma
+theta
+rm(fit.12.2.ln, mu, gamma, sigma, theta)
+```
