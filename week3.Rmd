@@ -1,0 +1,281 @@
+---
+title: "Lab3"
+author: "Shanpeng Li"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+The purpose of this lab is to show students how to apply non-parametric methods such as the Kaplan-Meier Product-Limit estimate and the Nelson-Aalen estimate. 
+
+
+First we will need to load the required packages. We will be using the following packages.
+
+```{r}
+library(survival)  # loading survival functions into R
+library(KMsurv)    # datasets from Klein and Moeschberger textbook
+```
+
+## Kaplan-Meier (Product-Limit) Estimator (Section 4.2)
+ For survival data one commonly wants to find an estimate of the survival function $S(t)$. The standard estimator of $S(t)$ is the Kaplan-Meier estimator. Assuming $t_1 < t_2 < \ldots, t_D$ for $D$ distinct times, the Kaplan-Meier estimate is defined as follows,
+ 
+ $$ \hat{S}(t) = \prod_{t_i \leq t}  \left[1- \frac{d_i}{Y_i} \right], $$
+ 
+ where at $t_i$ there are $d_i$ events (deaths) and $Y_i$ number of individuals who are at risk at time $t_i$. 
+To find the Kaplan-Meier estimates in ```R```, we can use the ```survfit( )``` function from the ```survival``` library. 
+
+```{r}
+data(drug6mp)
+fit <- survfit(Surv(t2, relapse) ~ 1, data = drug6mp)
+summary(fit) #Table 4.1a
+```
+
+### Graphical Presentations of the Product-Limit Estimates
+
+Unlike SAS, R will not produce plots automatically. However, we can use the information stored in our ```fit``` variable. One common plot many report for survival data is the plot of the product-limit estimates. Another is the plot of $\hat{H}(t) = -\log(\hat{S(t)})$ vs. $t$. The commands are written below.
+
+```{r, fig.align = 'center'}
+# Plotting the Kaplan-Meier Estimates
+plot(fit, main = 'Product-Limit Survival Estimates',
+          ylab = 'Survival Probability', xlab = 'Time')
+
+# Plotting -log[S(t)] vs. t
+plot(-log(fit$surv) ~ fit$time, type = 's', col = 'blue',
+          main = 'Estimated Cumulative Hazard Function', ylab = 'H(t) = -log[S(t)]',
+          xlab = 'Time (t)',
+          xlim = c(5, 35))
+
+##fit an exponential survival regression model
+fit.exp <- survreg(Surv(drug6mp$t2, drug6mp$relapse) ~ 1, dist = "exponential")
+lambdahat <- exp(-fit.exp$coefficients)
+hazardhat <- fit$time * lambdahat
+
+lines(fit$time, hazardhat, col = "black")
+legend(5, 0.8, legend = c("exp", "K-M"), col = c("black", "blue"), lty = 1, cex = 1)
+```
+
+
+### Confidence Intervals (Section 4.3)
+$(1-\alpha)\times100\%$ confidence intervals for the product-limit estimates can automatically be constructed through ```survfit```. The arguments are ```conf.type``` for the type of interval to be constructed (default is ```log```, but others include ```log-log```, ```plain``` [linear], ````none```) and ```conf.int``` for the length of the interval (default is .95). (Note: The log option is ```R``` is different than the log-transformed intervals in Klein and Moeschberger, which corresponds to ```conf.type = log-log```. )
+
+## Nelson-Aalen Estimator
+Recall the following relationship,
+$$ H(t) = - \log S(t). $$
+Thus, we can estimate the cumulative hazard from the Kaplan-Meier estimate,
+$$\hat{H}(t) = - \log \hat{S}(t).$$ We shall return to the ```drug6mp``` dataset for illustration. 
+
+
+```{r}
+H.km <- -log(fit$surv); H.km
+```
+
+An alternate method of estimating the cumulative hazard is through the Nelson-Aalen estimate,
+$$\tilde{H}(t) = \sum_{t_i \leq t} \frac{d_i}{Y_i}.$$
+Both $d_i$ and $Y_i$ can be extracted from ```survfit```. 
+
+```{r, fig.align = 'center'}
+#Nelson-Aalen Estimate of H(t):
+h               <- fit$n.event/fit$n.risk
+H.na            <- cumsum(h) #Nelson-Aalen estimates
+s               <- fit$n.event/fit$n.risk^2
+V.na            <- cumsum(s) #Variance estimate for the N-A estimator
+NAest           <- cbind(H.na, sqrt(V.na))
+colnames(NAest) <- c("NA-Est.","Std. Err")
+
+#Table 4.2
+NAest
+
+#Plot of the Nelson-Aalen Estimate
+plot(H.na ~ fit$time, type = 's',
+     main="Plot of Nelson-Aalen Estimates", xlab="Time (t)",
+     ylab="Estimated Cum. Hazard Function",
+     xlim = c(5, 35))
+
+lines(fit$time, hazardhat, col = "blue")
+legend(5, 0.7, legend = c("exp", "NA-Est"), col = c("blue", "black"), lty = 1, cex = 1)
+
+```
+
+Below we will compare the estimates of the cumulative hazard function using both approaches. 
+
+```{r, fig.align = 'center'}
+#Comparing the Nelson-Aalen Estimate to the Kaplan-Meier Estimate
+plot(H.km~fit$time, xlab = "time", ylab = " Estimated Cumulative Hazard Function",
+     main = "Different H(t) Estimates \n Fig. 4.1b", type = "s", col = "red")
+lines(H.na~fit$time, type = "s", lty = 2, col = "blue")
+legend("bottomright", c("Kaplan-Meier", "Nelson-Aalen"), lty = 1:2,
+     col = c("red", "blue"), bty = "n", cex = .9)
+```
+
+###Stratified Analyses
+We can create stratified Kaplan-Meier curves by groups. We will look at the ```bmt``` dataset for illustration. 
+```{r}
+data(bmt)
+```
+We shall focus on the *disease-free survival* probabilities for ALL, AML low risk and AML high risk patients. Looking at ```help(bmt)```, we can see that the disease-free survival time and indicator are under ```t2``` and ```d3``` respectively. The ```group``` variable stores what group the patient is in. More detail about the dataset is in section 1.3.
+
+```{r, fig.align = 'center'}
+fit.bmt <- survfit(Surv(t2, d3)~group, data = bmt)
+
+plot(fit.bmt, col = c('black', 'red', 'blue'), lty = c(1, 2, 3), ylab = 'Estimated Disease-Free Survival', xlab = 'Time', main = 'Kaplan-Meier Estimates by GROUP \n Fig. 4.2')
+
+legend("topright", c("ALL", "AML LOW", "AML HIGH"), lty = 1:3,
+     col = c("black", "red", "blue"), bty = "n", cex = .9)
+```
+
+## Introduction
+
+The purpose of this part is to give students the necessary framework to understand sections 4.4 to 4.6 in Klein and Moeschberger with a computational perspective. 
+First we will need to load the required packages. We will be using the  
+
+```{r}
+#install.packages(survival)
+#install.packages(KMsurv)
+library(survival)  # loading survival functions into R
+library(KMsurv)    # datasets from Klein and Moeschberger textbook
+## type your own paths here
+data_directory <- "functions/" #For later use
+```
+
+Some functions can be found at Eric Kawaguchi's Github account: https://github.com/erickawaguchi/bios215.
+
+Please have those functions ready and save them to your local machine.
+
+## Arcsin Transformed Confidence Intervals
+To the best of my knowlege, the ```survfit``` package does not include the arcsin transformed confidence intervals for the Kaplan-Meier estimate. An R function, ```arcsin_ci.R``` can be found on GitHub. We will compare the results to that of Table 4.4 in the book for the ALL group.
+
+```{r}
+source(paste0(data_directory, "arcsin_ci.R"))
+
+data(bmt)
+ci.fit <- survfit(Surv(bmt$t2[bmt$group == 1], bmt$d3[bmt$group == 1]) ~ 1)
+res <- arcsin.ci(ci.fit, alpha = 0.05)
+res
+```
+Although confidence intervals for all survival estimates are found, we can see that the confidence intervals for $S(365)$ similar up to the third decimal. 
+
+## Bootstrapping Standard Errors (Not in book)
+In class, we have learned that it is generally hard to find standard errors for quantiles such as the median. One way we can do this is by bootstrapping (Efron, 1979). For this part of the lab, we will show how one can bootstrap the standard errors for any quantile using a user-defined function.
+
+First we will create a function to calculate the bootstrapped standard error. A function can be as simple (or as complicated), and as brief (or as elaborate) as one would want. Here, I tried to make a function that is a little more elaborate. You can make your own.
+
+ 
+```{r}
+source(paste0(data_directory, "quantile_boots.R"))
+```
+
+We will use the Example 7.9 on page 224. The data is not in ```KMsurv``` so manual entry in required :(
+
+
+```{r}
+t1 <- c(1, 63, 105, 129, 182, 216, 250, 262, 301, 301, 
+        342, 354, 356, 358, 380, 383, 383, 338, 394, 408, 460, 489, 
+        499, 523, 524, 535, 562, 569, 675, 676, 748, 778, 786, 797, 955, 968, 1000,
+        1245, 1271, 1420, 1551, 1694, 2363, 2754, 2950)
+t2 <- c(17, 42, 44, 48, 60, 72, 74, 95, 103, 108, 122, 144, 167, 170,
+        183, 185, 193, 195, 197, 208, 234, 235, 254, 307, 315, 401, 445, 464, 484,
+        528, 542, 547, 577, 580, 795, 855, 1366, 1577, 2060, 2412, 2486, 2796, 2802, 2934, 2988)
+
+c1  <- c(rep(1, 43), 0, 0)
+c2  <- c(rep(1, 39), rep(0, 6))
+
+trt1 <- rep(1, 45)
+trt2 <-  rep(2, 45)
+```
+
+Using ```survival``` we can get an estimate of the median, a corresponding standard error, and confidence interval.
+
+```{r, fig.align = 'center'}
+fit <- survfit(Surv(c(t1, t2), c(c1, c2)) ~ c(trt1, trt2))
+
+plot(fit, lty = c(1,2), col = c("blue", "red"),
+     main = 'Estimated Survival Functions for GI Tumor Study \n Figure 7.5 (pg. 226)', ylab = 'Estimated Survival Function', xlab = 'Time')
+
+legend('topright', c('Chemo', 'Chemo + BPA'), col = c('blue', 'red'), lty = 1:2, bty = 'n')
+
+fit
+```
+
+Using our ```quantile_boots``` we can also get an estimate of the median (or any quantile), and a bootstrapped standard error.
+
+```{r}
+quantile_boots(t1, c1, 0.5, R = 1000, plots = T) 
+#quantile_boots(t2, c2, R = 1000)
+```
+
+## estimate S(t) and its standard error using bootstrap method 
+```{r}
+source(paste0(data_directory, "SurvivalProb_boots.R"))
+```
+
+```{r}
+SurvivalProb_boots(t1, c1, 200, plots = TRUE)
+```
+
+**Question**: Sometimes the bootstrap will fail or give large standard errors. Why?
+
+
+
+## Likelihood Ratio Confidence Intervals
+As disucssed in class one may use a likelihood ratio type confidence interval. To  generate such confidence intervals one will use the ```LRci``` function on GitHub. A ```survfit``` function is required as well as the time, ```t```, of interest. A root finder is used to find the upper and lower limits of the confidence interval. Since the upper root is searched within the interval $(0, \infty)$, we set the upper limit to be an arbitrarily high number, 100. However, the root may not lie in this interval and a warning will appear. In such cases, one may change the ```upper.lim``` value and run the function again. 
+
+Using the ALL group for the ```bmt``` dataset and being interested in $S(365)$ we will try to find a $95\%$ confidence interval using the likelihood ratio approach.
+
+```{r}
+source(paste0(data_directory, "LRci.R"))
+
+my.surv <- survfit(Surv(bmt$t2[bmt$group==1], bmt$d3[bmt$group==1])~1, conf.type = 'none')
+
+LRci.surv(my.surv, t = 365)
+```
+When compared to Table 4.4, this confidence interval is similar to all three large sample theory approaches.
+
+## Confidence Bands (Section 4.4)
+Confidence bands are different from pointwise confidence intervals. Confidence intervals are only valid for a *single* fixed time point; whereas confidence bands are valid for the *entire* survival function. Probabilistically, we want to find two random functions $L(t)$ and $U(t)$ such that
+$$1-\alpha = \Pr(L(t) \leq S(t) \leq U(t)) \hspace{.2in} \forall t_L \leq t \leq t_U. $$
+
+There are two popular types of confidence bands: *Hall-Wellner* and *Equal Probability*. The ```survival``` library does not, to the best of my knowledge, have a function or option to include confidence bands. So we will install and load another package, ```km.ci```. 
+
+```{r}
+#install.packages('km.ci')
+library(km.ci)
+```
+
+A quick Google search will yield multiple different functions and/or libraries to produce confidence bands for survival data. My personal favorite is ```http://www.ddiez.com/teac/surv/conf-bands.R```. However, R markdown will not behave nicely with this function but I encourage you all to look at it!
+
+Using ```km.ci()``` we can find confidence bands for our ```bmt``` example in Example 4.2. The function is rather limited and the values are slightly off compared to the tables in the book. SAS has a more in-depth selection for confidence bands (and intervals). However, the values outputted from SAS are also slightly off.
+
+
+```{r, fig.align = 'center'}
+data(bmt)
+
+my.surv <- survfit(Surv(bmt$t2[bmt$group==1], bmt$d3[bmt$group==1])~1, conf.type = 'none')
+
+ep.band <- km.ci(my.surv, tl = 86, tu = 609, method = 'logep')
+hw.band <- km.ci(my.surv, tl = 86, tu = 609, method = 'loghall')
+
+#Plotting them
+plot(my.surv, xlim = c(100, 600), main="Kaplan-Meier Estimate with 95% confidence bands \n Figure 4.5 (pg. 112)",
+     xlab="Time (t)", ylab="Estimated Survival Function")
+
+lines(ep.band$upper ~ ep.band$time, lty = 4, col = "red", lwd = 1.5, type = 's')
+lines(ep.band$lower ~ ep.band$time, lty = 4, col = "red", lwd = 1.5, type = 's')
+
+lines(hw.band$upper ~ hw.band$time, lty = 5, col = "blue", lwd = 1.5, type = 's')
+lines(hw.band$lower ~ hw.band$time, lty = 5, col = "blue", lwd = 1.5, type = 's')
+
+legend("bottomleft", legend=
+         c("K-M survival estimate",
+           "Confidence Intervals",
+           "H-W bands", "EP Bands"), lty=c(1, 2, 4,5), 
+       bty = "n", lwd = c(1, 1, 1.5, 1.5), cex = .7, 
+       col = c("black", "black", "red", "blue"))
+```
+
+
+
