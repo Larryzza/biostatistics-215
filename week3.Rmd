@@ -235,47 +235,39 @@ LRci.surv(my.surv, t = 365)
 ```
 When compared to Table 4.4, this confidence interval is similar to all three large sample theory approaches.
 
-## Confidence Bands (Section 4.4)
-Confidence bands are different from pointwise confidence intervals. Confidence intervals are only valid for a *single* fixed time point; whereas confidence bands are valid for the *entire* survival function. Probabilistically, we want to find two random functions $L(t)$ and $U(t)$ such that
-$$1-\alpha = \Pr(L(t) \leq S(t) \leq U(t)) \hspace{.2in} \forall t_L \leq t \leq t_U. $$
 
-There are two popular types of confidence bands: *Hall-Wellner* and *Equal Probability*. The ```survival``` library does not, to the best of my knowledge, have a function or option to include confidence bands. So we will install and load another package, ```km.ci```. 
+## Interval Estimation for Median Survival Time (Section 4.5)
+To find a $95\%$ confidence interval for the median survival time, we can use the method developed by Brookmeyer and Crowley (1982). The code is on GitHub under ```bc_median_ci``` and includes approaches for linear, log-transformed, and arcsine-transformed confidence intervals.
 
 ```{r}
-#install.packages('km.ci')
-library(km.ci)
+source(paste0(data_directory, "bc_median_ci.R"))
+
+bc.median.ci(my.surv, table = TRUE)
 ```
+We can see that these results are similar to that of Table 4.7. If you do not want to include the table you can set ```table = FALSE``` in the function.
 
-A quick Google search will yield multiple different functions and/or libraries to produce confidence bands for survival data. My personal favorite is ```http://www.ddiez.com/teac/surv/conf-bands.R```. However, R markdown will not behave nicely with this function but I encourage you all to look at it!
+## Interval Estimation for Mean Survival Time (Section 4.5)
+A natural estimator for $\mu$ is given by $$\hat{\mu} = \int_0^\infty \hat{S}(t) dt.$$ However this expression is only appropriate if the largest observed survival time is uncensored. Otherwise, the Kaplan-Meier estimator is not defined beyond the largest uncensored survival time. A common solution is to estimated the resticted mean survival within some preassigned interval $[0, \tau]$ for some $\tau \leq t_{max}$, the largest observed survival time. Therefore,
+$$\hat{\mu}_{\tau} = \int_0^\tau \hat{S}(t),$$
 
-Using ```km.ci()``` we can find confidence bands for our ```bmt``` example in Example 4.2. The function is rather limited and the values are slightly off compared to the tables in the book. SAS has a more in-depth selection for confidence bands (and intervals). However, the values outputted from SAS are also slightly off.
+and the variance of this estimator is defined as 
+$$Var[\hat{\mu}_{\tau}] = \sum_{i = 1}^D \left[\int_{t_i}^\tau \hat{S}(t)\right]^2 \frac{d_i}{r_i(r_i - d_i)}.$$
 
+In ```R``` one may use the ```print``` function to find the restricted mean survival time given a prespecified time ```t0```. The following is code to get the restricted mean survival time and its corresponding standard error for Example 4.2
 
-```{r, fig.align = 'center'}
+```{r}
 data(bmt)
 
-my.surv <- survfit(Surv(bmt$t2[bmt$group==1], bmt$d3[bmt$group==1])~1, conf.type = 'none')
+fit.ALL <- survfit(Surv(bmt$t2[bmt$group == 1], bmt$d3[bmt$group == 1]) ~ 1, conf.type = 'none')
 
-ep.band <- km.ci(my.surv, tl = 86, tu = 609, method = 'logep')
-hw.band <- km.ci(my.surv, tl = 86, tu = 609, method = 'loghall')
+fit.low <- survfit(Surv(bmt$t2[bmt$group == 2], bmt$d3[bmt$group == 2]) ~ 1, conf.type = 'none')
 
-#Plotting them
-plot(my.surv, xlim = c(100, 600), main="Kaplan-Meier Estimate with 95% confidence bands \n Figure 4.5 (pg. 112)",
-     xlab="Time (t)", ylab="Estimated Survival Function")
+fit.high <- survfit(Surv(bmt$t2[bmt$group == 3], bmt$d3[bmt$group == 3]) ~ 1, conf.type = 'none')
 
-lines(ep.band$upper ~ ep.band$time, lty = 4, col = "red", lwd = 1.5, type = 's')
-lines(ep.band$lower ~ ep.band$time, lty = 4, col = "red", lwd = 1.5, type = 's')
+t0 <- 2081 #Looking at restricted mean from [0, 2081] 
 
-lines(hw.band$upper ~ hw.band$time, lty = 5, col = "blue", lwd = 1.5, type = 's')
-lines(hw.band$lower ~ hw.band$time, lty = 5, col = "blue", lwd = 1.5, type = 's')
+print(fit.ALL, print.rmean = TRUE, rmean = t0) #ALL
+print(fit.low, print.rmean = TRUE, rmean = t0) #Low
+print(fit.high, print.rmean = TRUE, rmean = t0) #High
 
-legend("bottomleft", legend=
-         c("K-M survival estimate",
-           "Confidence Intervals",
-           "H-W bands", "EP Bands"), lty=c(1, 2, 4,5), 
-       bty = "n", lwd = c(1, 1, 1.5, 1.5), cex = .7, 
-       col = c("black", "black", "red", "blue"))
 ```
-
-
-

@@ -11,8 +11,8 @@ cbands.region <- function(surv.object, tL, tU) {
   
   writeLines("Find critical regions in Klein and Moeschberger 2nd ed. (Appendix C.3a - C.4c)")
   results <- list()
-  results$aL <- round(aL, 1)
-  results$aU <- round(aU, 1)
+  results$aL <- round(aL, 2)
+  results$aU <- round(aU, 2)
   return(results)
 }   
 

@@ -1,0 +1,235 @@
+---
+title: "Lab 4"
+author: "Shanpeng Li"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Confidence Bands (Section 4.4)
+Confidence bands are different from pointwise confidence intervals. Confidence intervals are only valid for a *single* fixed time point; whereas confidence bands are valid for the *entire* survival function. Probabilistically, we want to find two random functions $L(t)$ and $U(t)$ such that
+$$1-\alpha = \Pr(L(t) \leq S(t) \leq U(t)) \hspace{.2in} \forall t_L \leq t \leq t_U. $$
+
+There are two popular types of confidence bands: *Hall-Wellner* and *Equal Probability*. The ```survival``` library does not, to the best of my knowledge, have a function or option to include confidence bands. So we will install and load another package, ```km.ci```. 
+
+```{r}
+library(survival)
+library(km.ci)
+library(KMsurv)
+library(survMisc)
+data_directory <- "functions/"
+source(paste0(data_directory, "conf_bands.R"))
+```
+
+A quick Google search will yield multiple different functions and/or libraries to produce confidence bands for survival data. My personal favorite is ```http://www.ddiez.com/teac/surv/conf-bands.R```. However, R markdown will not behave nicely with this function but I encourage you all to look at it!
+
+Using ```km.ci()``` we can find confidence bands for our ```bmt``` example in Example 4.2. The function is rather limited and the values are slightly off compared to the tables in the book. SAS has a more in-depth selection for confidence bands (and intervals). However, the values outputted from SAS are also slightly off.
+
+
+```{r, fig.align = 'center'}
+data(bmt)
+
+my.surv <- survfit(Surv(bmt$t2[bmt$group==1], bmt$d3[bmt$group==1])~1, conf.type = 'none')
+
+ep.band <- km.ci(my.surv, tl = 86, tu = 609, method = 'logep')
+hw.band <- km.ci(my.surv, tl = 86, tu = 609, method = 'loghall')
+## EP band with arcsine square-root transformed
+crit.val <- cbands.region(my.surv, tL = 86, tU = 609)
+crit.val$aL
+crit.val$aU
+## crit.val depends on the values of aL and aU (See Appendix C.3)
+ep.sin.band <- cbands.interval(my.surv, tL = 86, tU = 609, crit.val = 2.8826, type = "asin", method = 'ep')
+
+#Plotting them
+plot(my.surv, xlim = c(100, 600), main="Kaplan-Meier Estimate with 95% confidence bands \n Figure 4.5 (pg. 112)",
+     xlab="Time (t)", ylab="Estimated Survival Function")
+
+lines(ep.band$upper ~ ep.band$time, lty = 4, col = "red", lwd = 1.5, type = 's')
+lines(ep.band$lower ~ ep.band$time, lty = 4, col = "red", lwd = 1.5, type = 's')
+
+lines(hw.band$upper ~ hw.band$time, lty = 5, col = "blue", lwd = 1.5, type = 's')
+lines(hw.band$lower ~ hw.band$time, lty = 5, col = "blue", lwd = 1.5, type = 's')
+
+lines(ep.sin.band$LL ~ ep.sin.band$t, lty = 6, col = "green", lwd = 1.5, type = 's')
+lines(ep.sin.band$UL ~ ep.sin.band$t, lty = 6, col = "green", lwd = 1.5, type = 's')
+
+legend("bottomleft", legend=
+         c("K-M survival estimate",
+           "Confidence Intervals",
+           "H-W bands", "EP Bands",
+           "EP Bands with asin"), lty=c(1, 2, 4, 5, 6), 
+       bty = "n", lwd = c(1, 1, 1.5, 1.5, 1.5), cex = .7, 
+       col = c("black", "black", "red", "blue", "green"))
+```
+
+## Left-Truncated Right-Censored Survival Data (Section 4.6)
+
+Left truncation is a common problem in survival analysis. We will show how to incorporate left truncation into our product-limit estimates. Naturally, one would like to extend this to modeling (Cox’s proportional hazards model and accelerated failure time models). However, I am unaware of any ‘nice’ functions/packages that can incorporate left truncation.
+Let’s look at the Channing house dataset.
+
+```{r}
+data(channing)
+```
+
+For left truncation we actually need to alter the ``Surv()`` function. We will have two time arguments. The first would be the left-truncation time, and the second would be the observed survival time. We also need to include change the ``type`` argument from ``right`` (default) to counting.
+
+```{r}
+fit <- survfit(Surv(ageentry, age, death, type = 'counting') ~ 1, data = channing)
+```
+
+```{r}
+fit
+```
+
+When we try to run this we see a warning. Some patients have equal entry and event times and thus we have a time to event of 0. Although R throws them away in the analysis, for cleanliness let us remove these subjects and re-run our model.
+
+```{r}
+channing <- channing[channing$time > 0,]
+fit <- survfit(Surv(ageentry, age, death, type = 'counting') ~ 1, 
+               data = channing)
+fit
+```
+
+```{r}
+fit.m <- survfit(Surv(ageentry, age, death, type='counting') ~ 1, 
+                 data = channing, subset = (gender == 1))
+fit.f <- survfit(Surv(ageentry, age, death, type='counting') ~ 1, 
+                 data = channing, subset = (gender == 2))
+head(fit.m$n.risk)
+```
+
+```{r}
+head(fit.f$n.risk)
+```
+
+We can see that the number at risk for males DOES reach 0. This is problematic, since the Kaplan Meier Product-Limit Estimate will be zero past this time. This is apparent when we look at the summary for males.
+
+```{r}
+summary(fit.m)
+```
+
+Here is a graphical summary of the number of subjects at risk as a function of age (in months).
+
+```{r}
+plot(fit.f$n.risk ~ fit.f$time, type = 'l', lty = 2, col = 'red',
+main = "Number at Risk as a Function of Age \n Figure 4.10 (pg. 124)", ylab = "Number at Risk", xlab = "Age (Months)")
+lines(fit.m$n.risk ~ fit.m$time, lty = 1, type = 'l', col = 'blue') 
+abline(h = 0, lty = 3)
+```
+
+How can we avoid this? Instead of looking at the unconditional survival function, we can condition on patients surviving beyond t given survival past a.
+
+ $$ \hat{S_a}(t) = \prod_{a \leq t_i \leq t}  \left[1- \frac{d_i}{Y_i} \right], t \geq a$$
+ 
+ 
+```{r}
+# Condition on living past 68 and 80 years
+fit.m2 <- survfit(Surv(ageentry, age, death, type='counting') ~ 1,
+data = channing, subset = (gender== 1 & age > 68 * 12))
+fit.f2 <- survfit(Surv(ageentry, age, death, type='counting') ~ 1,
+data = channing, subset = (gender== 2 & age > 68 * 12))
+fit.m3 <- survfit(Surv(ageentry, age, death, type='counting') ~ 1,
+data = channing, subset = (gender== 1 & age > 80 * 12))
+fit.f3 <- survfit(Surv(ageentry, age, death, type='counting') ~ 1,
+data = channing, subset = (gender== 2 & age > 80 * 12))
+
+plot(fit.m2$time/12, fit.m2$surv, type = 's', col = 'blue',
+main = 'Estimated Conditional Survival Functions for \n Channing House Residents',
+ylab = 'Estimated Conditional Survival Prob.', xlab = 'Age (Years)')
+lines(fit.f2$time / 12, fit.f2$surv, type = 's', col = 'red')
+lines(fit.m3$time / 12, fit.m3$surv, type = 's', col = 'red', lty = 2) 
+lines(fit.f3$time / 12, fit.f3$surv, type = 's', col = 'blue', lty = 2)
+legend('topright', c('Male > 68', 'Female > 68', 'Male > 80', 'Female > 80'), 
+       col = c('blue', 'red', 'blue', 'red'),
+       lty = c(1, 1, 2, 2))
+```
+
+
+
+## One-Sample Log-Rank Test (Section 7.2)
+The log-rank test can be seen as a survival data analogy of the t-test for normal data or $\chi^2$-test for categorical data. In the one-sample case, we are interested in seeing if the population hazard rate is $h_0(t)$ for all $t \leq \tau$ for some given $\tau$. We can think of this as a goodness-of-fit type test. Does our data support the hypothesis that the population hazard is $h_0(t)$ or not? 
+Performing this test is slightly tricky in ```R```. We would need to specificy hypothesized survival probabilities for each observed survival time. Below is an example.
+
+Consider the ```alloauto``` data. Suppose that it is know that for allogenic transplant patients the time from diagnosis to relapse or death has an exponential distribution with $\lambda = 0.03$. We can conduct a one-sample log-rank test to see if the hazard rate of the allogenic transplant patients is equal to $0.03$.
+
+```{r}
+data(alloauto)
+head(alloauto)
+timevar <- alloauto$time[alloauto$type == 1]
+delta   <- alloauto$delta[alloauto$type == 1]
+
+null_surv <- exp(-0.03 * timevar) #Expected survival probability
+
+survdiff(Surv(timevar, delta) ~ offset(null_surv))
+rm(timevar, delta, null_surv)
+```
+With a p-value = $0.27$, we do not have sufficient evidence to reject the hypothesis that the population hazard rate is not 0.03 with an $\alpha = 0.05$. 
+
+
+## Log-Rank Test (Section 7.3)
+When looking at two (or more) samples, interest is primarily in comparing quantities from these samples. We can conduct pointwise inference (e.g. $\hat{S}_1(t) = \hat{S}_2(t)$, or $\mu_1 = \mu_2$) rather easily. 
+
+In the two-sample case, assuming independence, standard software will give us estimates and corresponding standard errors for both samples. Therefore, $Z$-tests can be conducted to test whether the parameters of interest for both samples are equivalent or not.
+
+However, much like confidence bands and confidence intervals, we are not interested in a *single point*, but rather, we are interested in seeing if two *rates* are equivalent throughout time. 
+
+The (weighted) log-rank test is used to compare the hypothesis if two (or more) hazard rates are the same for all $t \leq \tau$ for some given $\tau$. Usually $\tau$ is taken to be the largest time on study. Thus are hypothesis can be written as
+$$H_0: h_1(t) = h_2(t) \hspace{.2in} \mbox{for all } t \leq \tau$$.
+
+
+The theoretical underpinnings of the weighted log-rank test come from the hypergeometric distribution (See Notes). Different weights have been proposed in the literature corresponding optimum power in different scenarios. For example, $W(t_i) = 1$ yields the usual *log-rank* test that corresponds to optimal power when assuming proportional hazards. **It is important to know which weights correspond to which assumptions (pg. 208)**.
+
+The log-rank can be easily implemented in ```R``` through the ```survdiff``` function. However, there is a limited number of weights we can use in ```survdiff```. Alternatively, we will take a look at another package in ```R``` called ```survMisc``` that extends the log-rank test  for different weights. **SAS** also has more flexibility in this department as will be shown later. 
+
+Let's look at Example 7.2 on pg. 209. 
+
+```{r, fig.align = 'center'}
+data(kidney, package = "KMsurv")
+
+head(kidney)
+#Graph the two survival functions
+plot(survfit(Surv(time, delta) ~ type, data = kidney, conf.type = 'none'), lty = 1:2, col = c('blue', 'red'), main = ' Est. Survival Function for Two Groups \n Fig 7.1 pg. 209', ylab = 'Estimates Survival Function', xlab = 'Time')
+
+legend('bottomleft', c('Surgical', 'Precutaneous'), col = c('blue', 'red'), lty = 1:2, bty = 'n')
+
+#Log-Rank Test (W = 1)
+survdiff(Surv(time, delta) ~ type, data = kidney, rho = 0)
+
+#Log-Rank Test with Peto-Peto Weight
+survdiff(Surv(time, delta) ~ type, data = kidney, rho = 1)
+```
+
+There may be other packages from CRAN that can perform log-rank tests using different weights. In any case, caution should be used when running those analyses (e.g. Compare results to SAS or textbook to make sure they agree).
+
+One such alternative is the ```comp``` function in the ```survMisc``` package. This function calculates the log-rank test for the unweighted, Gehan-Breslow, Tarone-Ware, Peto-Peto, and Fleming-Harrington weights. Below is code on how to run the log-rank test using ```comp```.
+
+```{r}
+library(survMisc)
+fit <- ten(Surv(time, delta) ~ type, data = kidney) #Save as a "ten" object
+comp(fit) #Calculates log-rank test statistics
+```
+From top to bottom we have the test statistics, ```Q```, and the p-values, ```pNorm``` for the log-rank, Gehan-Breslow, Tarone-Ware, Peto-Peto, modified Peto-Peto, and Fleming-Harrington weights. The results are similar to that of Table 7.3 and from what we got with ```survdiff```. 
+
+###Log-Rank Test for More than 2 Samples
+
+Much like with $2 \times 2$ tables, we may want to stratify with respect to more than two samples. In such cases a stratified log-rank test can be ran. We can think of this as a survival data analog to ANOVA or the Mantel-Haenszel test. 
+
+Let's look at the ```bmt``` example in Example 7.4. Here
+$$H_0: h_{ALL}(t) = h_{LOW}(t) = h_{HIGH}(t) \hspace{.2in} \mbox{for all } t \leq \tau,$$
+with an alternative that *at least* one of the populations has a different survival rate.
+
+```{r, fig.align = 'center'}
+data(bmt)
+
+plot(survfit(Surv(t2, d3) ~ group, data = bmt, conf.type = 'none'), 
+     lty = 1:3, col = c('black', 'blue', 'red'), 
+     main = 'Bone Marrow Transplant Data \n Example 7.4 ', ylab = 'Estimates Survival Function', 
+     xlab = 'Time')
+
+legend('bottomleft', c('ALL', 'Low', 'High'), col = c('black', 'blue', 'red'), 
+       lty = 1:3, bty = 'n')
+
+survdiff(Surv(t2, d3) ~ group, data = bmt)
+```
