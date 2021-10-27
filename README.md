@@ -1,3 +1,3 @@
 "# biostatistics-215" 
 Survival Analysis Using R
-(class material and homework)
+(class materials and homeworks)
