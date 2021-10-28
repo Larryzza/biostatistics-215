@@ -1,9 +1,9 @@
 bc.median.ci <- function(surv.object, type = "linear", alpha = 0.05, table = FALSE) {
 
-  if((min(surv.object$surv) < 0.5) == FALSE) {
+  'if((min(surv.object$surv) < 0.5) == FALSE) {
     stop("Estimate for median survival time does not exist. Can not compute
          confidence interval.")
-  }
+  }'
   
   median.est <- min(surv.object$time[surv.object$surv == max(surv.object$surv[surv.object$surv - 0.5 <= 0])])
   
@@ -38,7 +38,7 @@ bc.median.ci <- function(surv.object, type = "linear", alpha = 0.05, table = FAL
   results$upper  <- ifelse(is.na(UL), NA, round(UL, 3))
   results$type   <- type
   results$alpha  <- alpha
-  if(table == TRUE) results$table  <- round(res[surv.object$n.censor == 0, ], 3)
+  if(table == TRUE) results$table  <- round(res[surv.object$n.event != 0, ], 3)
   
   return(results)
 }

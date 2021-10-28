@@ -26,7 +26,6 @@ library(KMsurv)
 library(ggplot2)
 library(survival)
 library(tidyverse)
-library(kableExtra)
 ```
 <!-- Begin writing -->
 
@@ -44,7 +43,7 @@ df_c <- burn[which(burn$Z1==1),]
 
 #povidone-iodine group
 fit_p <- survfit(Surv(T3, D3) ~ 1, data = df_p)
-summary(fit_c)
+summary(fit_p)
 
 #chlorhexidine group
 fit_c <- survfit(Surv(T3, D3) ~ 1, data = df_c)
@@ -66,25 +65,33 @@ Var.est.c <- cumsum(fit_c$n.event/fit_c$n.risk^2)
 data.frame(H.est=H.est.c, SE.est=sqrt(Var.est.c))
 
 # proportion
-H.est.p/H.est.c
+plot(fit_p, lty = 4, col = "red", lwd = 1.5)
+lines(fit_c, lty = 4, col = "blue", lwd = 1.5)
+legend("bottomleft", legend=
+         c("fit_p",
+           "fit_c"), lty=4, 
+       bty = "n", lwd = 1.5, cex = .7, 
+       col = c( "red", "blue"))
 ```
-
+Since two lines crossed, we know that these two cumulative hazard rates are not proportional to each other.
 
 ### (c)
 Provide estimates of the median time to infection and find 95% confidence intervals for the median time to infection for both the chlorhexidine and povidone-iodine groups using the linear, log-transformed, and arcsine formulas.
 
+Please note that here we modified the `bc_median_ci.R` function.
 ```{r}
 source("functions//bc_median_ci.R")
-
 # povidone-iodine group
-bc.median.ci(fit_p, type = "linear", table = F)
-bc.median.ci(fit_p, type = "log", table = F)
-bc.median.ci(fit_p, type = "asin", table = F)
+bc.median.ci(fit_p, type = "linear", table = T)
+bc.median.ci(fit_p, type = "log", table = T)
+bc.median.ci(fit_p, type = "asin", table = T)
+```
 
-# chlorhexidine group
-bc.median.ci(fit_c, type = "linear", table = F)
-bc.median.ci(fit_c, type = "log", table = F)
-bc.median.ci(fit_c, type = "asin", table = F)
+```{r}
+# chlorhexidine group (not available)
+bc.median.ci(fit_c, type = "linear", table = T)
+bc.median.ci(fit_c, type = "log", table = T)
+bc.median.ci(fit_c, type = "asin", table = T)
 ```
 
 ### (d)
@@ -97,13 +104,14 @@ For povidone-iodine group
 source("functions//arcsin_ci.R")
 arcsin.ci(fit_p, alpha = 0.05)
 ```
-we can found that 95% confidence intervals for the survival functions at 10 days is 0.856(0.774, 0.923).
+we can found that 95% confidence intervals for the survival functions at 10 days is 0.736(0.626, 0.834).
 
 For chlorhexidine group
+
 ```{r}
 arcsin.ci(fit_c, alpha = 0.05)
 ```
-we can found that 95% confidence intervals for the survival functions at 10 days is 0.736(0.626, 0.834).
+we can found that 95% confidence intervals for the survival functions at 10 days is 0.856(0.774, 0.932).
 
 #### log transformed
 
@@ -136,13 +144,13 @@ For povidone-iodine group
 ```{r}
 log.ci(fit_p, alpha = 0.05)
 ```
-we can found that 95% confidence intervals for the survival functions at 10 days is 0.856(0.761, 0.916).
+we can found that 95% confidence intervals for the survival functions at 10 days is 0.736(0.614, 0.825).
 
 For chlorhexidine group
 ```{r}
 log.ci(fit_c, alpha = 0.05)
 ```
-we can found that 95% confidence intervals for the survival functions at 10 days is 0.736(0.614, 0.825).
+we can found that 95% confidence intervals for the survival functions at 10 days is 0.856(0.761, 0.916).
 
 ### (e)
 Find 95% confidence bands for the infection-free functions over the range 8–20 days postinfection for both the chlorhexidine and povidone-iodine groups using the linear, log transformed, and arcsine transformed formulas.
@@ -188,27 +196,86 @@ cbands.region(fit_c, 8, 20)
 
 linear
 ```{r}
-cbands.interval(fit_c, 8, 20, crit.value=(2.5374+2.4859+2.5678+2.5193)/4, 
+cbands.interval(fit_c, 8, 20, crit.value=2.5276, 
                 alpha = 0.05, type = "linear", method = "ep")
 ```
 
 arcsinetransformed
 ```{r}
-cbands.interval(fit_c, 8, 20, crit.value=(2.5374+2.4859+2.5678+2.5193)/4, 
+cbands.interval(fit_c, 8, 20, crit.value=2.5276, 
                 alpha = 0.05, type = "asin", method = "ep")
 ```
 
 log-transformed
 ```{r}
-cbands.interval(fit_c, 8, 20, crit.value=(2.5374+2.4859+2.5678+2.5193)/4, 
+cbands.interval(fit_c, 8, 20, crit.value=2.5276, 
                 alpha = 0.05, type = "log", method = "ep")
 ```
 
 ### (f)
 Find 95% HW confidence bands for the infection-free functions over the range 8–20 days postinfection for both the chlorhexidine and povidone-iodine.
 
+#### povidone-iodine
+
+```{r}
+#calculate critical regions first
+cbands.region(fit_p, 8, 20)
+#0.8426
+```
+
+linear
+```{r}
+cbands.interval(fit_p, 8, 20, crit.value=0.8426, 
+                alpha = 0.05, type = "linear", method = "hw")
+```
+
+arcsinetransformed
+```{r}
+cbands.interval(fit_p, 8, 20, crit.value=0.8426, 
+                alpha = 0.05, type = "asin", method = "hw")
+```
+
+log-transformed
+```{r}
+cbands.interval(fit_p, 8, 20, crit.value=0.8426, 
+                alpha = 0.05, type = "log", method = "hw")
+```
+
+#### chlorhexidine
+
+```{r}
+#calculate critical regions first
+cbands.region(fit_c, 8, 20)
+#(0.9955+0.9919+0.9600+0.9549)/4
+```
+
+linear
+```{r}
+cbands.interval(fit_c, 8, 20, crit.value=0.975575, 
+                alpha = 0.05, type = "linear", method = "ep")
+```
+
+arcsinetransformed
+```{r}
+cbands.interval(fit_c, 8, 20, crit.value=0.975575, 
+                alpha = 0.05, type = "asin", method = "ep")
+```
+
+log-transformed
+```{r}
+cbands.interval(fit_c, 8, 20, crit.value=0.975575, 
+                alpha = 0.05, type = "log", method = "ep")
+```
+
+
 ### (g)
 Based on the results above, how does the infection experience of the chlorhexidine and povidone-iodine groups compare?
+
+```{r}
+survdiff(Surv(T3, D3) ~ Z1, data=burn)
+```
+
+As we can tell from the results above, chlorhexidine group has the higher estimated median survival probability than that of povidone-iodine group. All estimate methods provided consistent answers. In addition, the difference is significant according to the Log-Rank Test.
 
 ## Q4.7
 
@@ -271,10 +338,111 @@ df %>%
 
 Table 1.7 reports the results of a study on the survival times of patients admitted to a psychiatric hospital. In this data set patients were admitted to the hospital at a random age and followed until death or the end of the study. Let X be the patient’s age at death. Note that the data we have on X is left truncated by the patient’s age at entry into the hospital and right censored by the end of the study.
 
+```{r}
+data(psych)
+psych %>%
+  mutate(end=age+time) %>% 
+  arrange(age) -> df
+
+Y <- lapply(as.list(min(c(df$age, df$end)):max(c(df$age, df$end))),
+            function(x){length(which(df$age<=x)) -
+                length(which(df$end<x))}) %>% unlist()
+N <- lapply(as.list(min(c(df$age, df$end)):max(c(df$age, df$end))),
+            function(x){length(which(df$end<=x & df$death==1))}) %>% unlist()
+dN <- diff(c(0,N))
+
+table <- data.frame(Time=min(c(df$age, df$end)):max(c(df$age, df$end)),
+                    Y=Y,
+                    dN=dN,
+                    S=cumprod((Y-dN)/Y))
+(table <- table[which(table$Time %in% c(df$age, df$end)), ])
+```
+
 ### (a)
 Plot the number at risk, Yi , as a function of age.
 
+```{r}
+ggplot(table, aes(x=Time, y=Y)) +
+  geom_line() + theme_bw()
+```
+
 ### (b)
 Estimate the conditional survival function for a psychiatric patient who has survived to age 30 without entering a psychiatric hospital.
+
+```{r}
+df$death[which(df$age<30)]<-0
+
+Y <- lapply(as.list(min(c(df$age, df$end)):max(c(df$age, df$end))),
+            function(x){length(which(df$age<=x)) -
+                length(which(df$end<x))}) %>% unlist()
+N <- lapply(as.list(min(c(df$age, df$end)):max(c(df$age, df$end))),
+            function(x){length(which(df$end<=x & df$death==1))}) %>% unlist()
+dN <- diff(c(0,N))
+
+table <- data.frame(Time=min(c(df$age, df$end)):max(c(df$age, df$end)),
+                    Y=Y,
+                    dN=dN,
+                    S=cumprod((Y-dN)/Y))
+(table <- table[which(table$Time %in% c(df$age, df$end)), ])
+```
+
+## Q7.2
+
+In Exercise 5 of Chapter 6, the survival experience of patients given an autologous transplant was compared to a postulated exponential survival rate with a hazard rate of 0.045. Using the data in Table 1.4 of Chapter 1, test the hypothesis that the hazard rate of these auto transplant patients is equal to 0.045 against the alternative that it is larger than 0.045 using the one-sample, log-rank test. Repeat this test using a weight function which gives heavier weight to departures early in time from this hazard rate.
+
+```{r}
+data(alloauto)
+timevar <- alloauto$time[alloauto$type == 2]
+delta   <- alloauto$delta[alloauto$type == 2]
+
+null_surv <- exp(-0.045 * timevar) #Expected survival probability
+
+survdiff(Surv(timevar, delta) ~ offset(null_surv))
+```
+With a p-value = $0.00225$, we can reject the hypothesis that the population hazard rate is 0.045 with an $\alpha = 0.05$. 
+
+## Q7.4
+
+In section 1.11, data from a study of the effect of ploidy on survival for patients with tumors of the tongue was reported.
+
+```{r}
+data(tongue)
+```
+
+
+### (a)
+
+Test the hypothesis that the survival rates of patients with cancer of the tongue are the same for patients with aneuploid and diploid tumors using the log-rank test.
+
+```{r}
+survdiff(Surv(time, delta) ~ type, data = tongue, rho = 0)
+```
+With a p-value = $0.09$, we can not reject the hypothesis that the survival rates of patients with cancer of the tongue are the same for patients with aneuploid and diploid tumors with an $\alpha = 0.05$. 
+
+### (b)
+
+If primary interest is in detecting differences in survival rates between the two types of cancers which occur soon after the diagnosis of the cancer, repeat part a using a more appropriate test statistic.
+
+Since we would like to focus on the time soon after the diagnosis of the cancer, we will weight more at the beginning part. Then we chose Peto-Peto weights for comparison.
+
+```{r}
+#Log-Rank Test with Peto-Peto Weight
+survdiff(Surv(time, delta) ~ type, data = tongue, rho = 1)
+```
+With a p-value = $0.07$, we can not reject the hypothesis that the survival rates of patients with cancer of the tongue are the same for patients with aneuploid and diploid tumors with an $\alpha = 0.05$ and more weighting at time period soon after the diagnosis of the cancer. 
+
+## Q7.9
+
+On our web page, data is reported on the death times of 863 kidney transplant patients (see section 1.7). Here, patients can be classified by race and sex into one of four groups
+
+### (a)
+
+Test the hypothesis that there is no difference in survival between the four groups.
+
+```{r}
+data(kidtran)
+survdiff(Surv(time, delta) ~ gender+race, data = kidtran, rho = 0)
+```
+With a p-value = $0.2$, we can not reject the hypothesis that there is no difference in survival between the four groups with an $\alpha = 0.05$. 
 
 <div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

@@ -28,7 +28,7 @@ cbands.interval <- function(surv.object, tL, tU, crit.value, alpha = 0.05, type 
   new.se <- surv.object$std.err[(surv.object$time >= max(surv.object$time[surv.object$time <= tL])) 
                                 & (surv.object$time <= max(surv.object$time[surv.object$time <= tU]))]
   
-  new.censor <- surv.object$n.censor[(surv.object$time >= max(surv.object$time[surv.object$time <= tL])) 
+  new.event <- surv.object$n.event[(surv.object$time >= max(surv.object$time[surv.object$time <= tL])) 
                                     & (surv.object$time <= max(surv.object$time[surv.object$time <= tU]))]
   
   results <- data.frame(t = new.time, surv = new.surv, se = new.se)  
@@ -66,7 +66,7 @@ cbands.interval <- function(surv.object, tL, tU, crit.value, alpha = 0.05, type 
   
   #----- Returning results here
   writeLines(paste0("Returning ", type, "-type confidence bands using ", method, " method."))
-  return(round(results[which(new.censor == 0), ], 3))
+  return(round(results[which(new.event != 0), ], 3))
 }
 
 #cbands.interval(surv.object, tL = 100, tU = 600, crit.value = 1.3211, type = "linear", method = "hw")

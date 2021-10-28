@@ -346,55 +346,780 @@ h1,h2,h3,h4,h5,h6{
 <h3>(a)</h3>
 <p>Estimate the survival (infection-free) functions and their standard errors for the chlorhexidine and povidone-iodine groups.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(burn)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df_c <span class="ot">&lt;-</span> burn[<span class="fu">which</span>(burn<span class="sc">$</span>D3<span class="sc">==</span><span class="dv">0</span>),]</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df_p <span class="ot">&lt;-</span> burn[<span class="fu">which</span>(burn<span class="sc">$</span>D3<span class="sc">==</span><span class="dv">1</span>),]</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df_p <span class="ot">&lt;-</span> burn[<span class="fu">which</span>(burn<span class="sc">$</span>Z1<span class="sc">==</span><span class="dv">0</span>),]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df_c <span class="ot">&lt;-</span> burn[<span class="fu">which</span>(burn<span class="sc">$</span>Z1<span class="sc">==</span><span class="dv">1</span>),]</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#chlorhexidine group</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>fit_c <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(T3, D3) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> df_c)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_c)</span></code></pre></div>
-<pre><code>## Call: survfit(formula = Surv(T3, D3) ~ 1, data = df_c)
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#povidone-iodine group</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>fit_p <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(T3, D3) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> df_p)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_p)</span></code></pre></div>
+<pre><code>## Call: survfit(formula = Surv(T3, D3) ~ 1, data = df_p)
 ## 
-##      time n.risk n.event survival std.err lower 95% CI upper 95% CI</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#povidone-iodine group</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fit_p <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(T3, D3) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> df_p)</span>
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##     1     70       1    0.986  0.0142        0.958        1.000
+##     3     69       3    0.943  0.0277        0.890        0.999
+##     4     66       4    0.886  0.0380        0.814        0.963
+##     5     62       1    0.871  0.0400        0.796        0.953
+##     6     60       2    0.842  0.0436        0.761        0.932
+##     7     58       3    0.799  0.0481        0.710        0.899
+##     8     53       1    0.784  0.0495        0.693        0.887
+##     9     50       2    0.752  0.0522        0.657        0.862
+##    10     47       1    0.736  0.0535        0.639        0.849
+##    11     44       2    0.703  0.0561        0.601        0.822
+##    13     40       1    0.685  0.0574        0.582        0.808
+##    19     33       1    0.665  0.0593        0.558        0.791
+##    21     30       1    0.642  0.0613        0.533        0.774
+##    23     27       1    0.619  0.0635        0.506        0.756
+##    32     18       1    0.584  0.0686        0.464        0.735
+##    44      8       1    0.511  0.0910        0.361        0.725
+##    47      6       1    0.426  0.1086        0.258        0.702
+##    51      4       1    0.320  0.1231        0.150        0.680</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#chlorhexidine group</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fit_c <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(T3, D3) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> df_c)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_c)</span></code></pre></div>
 <pre><code>## Call: survfit(formula = Surv(T3, D3) ~ 1, data = df_c)
 ## 
-##      time n.risk n.event survival std.err lower 95% CI upper 95% CI</code></pre>
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##     2     84       3    0.964  0.0202        0.925        1.000
+##     3     81       1    0.952  0.0232        0.908        0.999
+##     4     80       1    0.940  0.0258        0.891        0.992
+##     5     79       5    0.881  0.0353        0.814        0.953
+##     8     73       1    0.869  0.0369        0.800        0.944
+##    10     70       1    0.856  0.0384        0.784        0.935
+##    11     68       1    0.844  0.0398        0.769        0.926
+##    14     57       1    0.829  0.0418        0.751        0.915
+##    16     50       1    0.812  0.0441        0.730        0.904
+##    17     47       2    0.778  0.0485        0.688        0.879
+##    18     41       2    0.740  0.0531        0.643        0.852
+##    42      9       1    0.658  0.0907        0.502        0.862</code></pre>
 </div>
 <div id="b" class="section level3">
 <h3>(b)</h3>
 <p>Estimate the cumulative hazard rates and their standard errors for the chlorhexidine and povidone-iodine groups. Plot these estimates. Does it appear that the two cumulative hazard rates are proportional to each other?</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># povidone-iodine group</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>H.est.p <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(fit_p<span class="sc">$</span>n.event<span class="sc">/</span>fit_p<span class="sc">$</span>n.risk)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Var.est.p <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(fit_p<span class="sc">$</span>n.event<span class="sc">/</span>fit_p<span class="sc">$</span>n.risk<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">H.est=</span>H.est.p, <span class="at">SE.est=</span><span class="fu">sqrt</span>(Var.est.p))</span></code></pre></div>
+<pre><code>##         H.est     SE.est
+## 1  0.01428571 0.01428571
+## 2  0.05776398 0.02888254
+## 3  0.11837004 0.04186257
+## 4  0.13449907 0.04486224
+## 5  0.16783240 0.05067718
+## 6  0.21955654 0.05882152
+## 7  0.23842446 0.06177354
+## 8  0.27842446 0.06794093
+## 9  0.29970106 0.07119455
+## 10 0.34515561 0.07811352
+## 11 0.34515561 0.07811352
+## 12 0.37015561 0.08201659
+## 13 0.37015561 0.08201659
+## 14 0.37015561 0.08201659
+## 15 0.37015561 0.08201659
+## 16 0.40045864 0.08743566
+## 17 0.40045864 0.08743566
+## 18 0.43379197 0.09357407
+## 19 0.47082901 0.10063721
+## 20 0.47082901 0.10063721
+## 21 0.47082901 0.10063721
+## 22 0.47082901 0.10063721
+## 23 0.47082901 0.10063721
+## 24 0.47082901 0.10063721
+## 25 0.52638456 0.11495333
+## 26 0.52638456 0.11495333
+## 27 0.52638456 0.11495333
+## 28 0.52638456 0.11495333
+## 29 0.52638456 0.11495333
+## 30 0.52638456 0.11495333
+## 31 0.65138456 0.16982128
+## 32 0.65138456 0.16982128
+## 33 0.81805123 0.23794337
+## 34 1.06805123 0.34513337
+## 35 1.06805123 0.34513337
+## 36 1.06805123 0.34513337
+## 37 1.06805123 0.34513337</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># chlorhexidine group</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>H.est.c <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(fit_c<span class="sc">$</span>n.event<span class="sc">/</span>fit_c<span class="sc">$</span>n.risk)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>Var.est.c <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(fit_c<span class="sc">$</span>n.event<span class="sc">/</span>fit_c<span class="sc">$</span>n.risk<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">H.est=</span>H.est.c, <span class="at">SE.est=</span><span class="fu">sqrt</span>(Var.est.c))</span></code></pre></div>
+<pre><code>##         H.est     SE.est
+## 1  0.03571429 0.02061965
+## 2  0.04805996 0.02403302
+## 3  0.06055996 0.02708940
+## 4  0.12385110 0.03917894
+## 5  0.12385110 0.03917894
+## 6  0.13754973 0.04150472
+## 7  0.13754973 0.04150472
+## 8  0.15183545 0.04389446
+## 9  0.16654133 0.04629240
+## 10 0.16654133 0.04629240
+## 11 0.16654133 0.04629240
+## 12 0.18408519 0.04950529
+## 13 0.18408519 0.04950529
+## 14 0.20408519 0.05339264
+## 15 0.24663838 0.06128752
+## 16 0.29541887 0.07032730
+## 17 0.29541887 0.07032730
+## 18 0.29541887 0.07032730
+## 19 0.29541887 0.07032730
+## 20 0.29541887 0.07032730
+## 21 0.29541887 0.07032730
+## 22 0.29541887 0.07032730
+## 23 0.29541887 0.07032730
+## 24 0.29541887 0.07032730
+## 25 0.29541887 0.07032730
+## 26 0.29541887 0.07032730
+## 27 0.29541887 0.07032730
+## 28 0.29541887 0.07032730
+## 29 0.40652998 0.13149756
+## 30 0.40652998 0.13149756
+## 31 0.40652998 0.13149756
+## 32 0.40652998 0.13149756
+## 33 0.40652998 0.13149756
+## 34 0.40652998 0.13149756
+## 35 0.40652998 0.13149756
+## 36 0.40652998 0.13149756</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># proportion</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_p, <span class="at">lty =</span> <span class="dv">4</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(fit_c, <span class="at">lty =</span> <span class="dv">4</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomleft&quot;</span>, <span class="at">legend=</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>         <span class="fu">c</span>(<span class="st">&quot;fit_p&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;fit_c&quot;</span>), <span class="at">lty=</span><span class="dv">4</span>, </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>, <span class="at">cex =</span> .<span class="dv">7</span>, </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>( <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" width="672" style="display: block; margin: auto;" /> Since two lines crossed, we know that these two cumulative hazard rates are not proportional to each other.</p>
 </div>
 <div id="c" class="section level3">
 <h3>(c)</h3>
 <p>Provide estimates of the median time to infection and find 95% confidence intervals for the median time to infection for both the chlorhexidine and povidone-iodine groups using the linear, log-transformed, and arcsine formulas.</p>
+<p>Please note that here we modified the <code>bc_median_ci.R</code> function.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;functions//bc_median_ci.R&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># povidone-iodine group</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bc.median.ci</span>(fit_p, <span class="at">type =</span> <span class="st">&quot;linear&quot;</span>, <span class="at">table =</span> T)</span></code></pre></div>
+<pre><code>## $median
+## [1] 47
+## 
+## $lower
+## [1] 23
+## 
+## $upper
+## [1] NA
+## 
+## $type
+## [1] &quot;linear&quot;
+## 
+## $alpha
+## [1] 0.05
+## 
+## $table
+##    time  surv      z
+## 1     1 0.986 34.245
+## 2     3 0.943 15.963
+## 3     4 0.886 10.143
+## 4     5 0.871  9.284
+## 5     6 0.842  7.848
+## 6     7 0.799  6.215
+## 7     8 0.784  5.734
+## 8     9 0.752  4.832
+## 9    10 0.736  4.417
+## 10   11 0.703  3.619
+## 12   13 0.685  3.231
+## 16   19 0.665  2.777
+## 18   21 0.642  2.324
+## 19   23 0.619  1.869
+## 25   32 0.584  1.228
+## 31   44 0.511  0.123
+## 33   47 0.426 -0.681
+## 34   51 0.320 -1.467</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bc.median.ci</span>(fit_p, <span class="at">type =</span> <span class="st">&quot;log&quot;</span>, <span class="at">table =</span> T)</span></code></pre></div>
+<pre><code>## $median
+## [1] 47
+## 
+## $lower
+## [1] 23
+## 
+## $upper
+## [1] NA
+## 
+## $type
+## [1] &quot;log&quot;
+## 
+## $alpha
+## [1] 0.05
+## 
+## $table
+##    time  surv      z
+## 1     1 0.986  3.875
+## 2     3 0.943  4.932
+## 3     4 0.886  4.925
+## 4     5 0.871  4.846
+## 5     6 0.842  4.625
+## 6     7 0.799  4.205
+## 7     8 0.784  4.035
+## 8     9 0.752  3.650
+## 9    10 0.736  3.443
+## 10   11 0.703  2.988
+## 12   13 0.685  2.739
+## 16   19 0.665  2.422
+## 18   21 0.642  2.082
+## 19   23 0.619  1.718
+## 25   32 0.584  1.164
+## 31   44 0.511  0.123
+## 33   47 0.426 -0.696
+## 34   51 0.320 -1.476</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bc.median.ci</span>(fit_p, <span class="at">type =</span> <span class="st">&quot;asin&quot;</span>, <span class="at">table =</span> T)</span></code></pre></div>
+<pre><code>## $median
+## [1] 47
+## 
+## $lower
+## [1] 23
+## 
+## $upper
+## [1] NA
+## 
+## $type
+## [1] &quot;asin&quot;
+## 
+## $alpha
+## [1] 0.05
+## 
+## $table
+##    time  surv      z
+## 1     1 0.986 11.137
+## 2     3 0.943  9.103
+## 3     4 0.886  7.372
+## 4     5 0.871  7.006
+## 5     6 0.842  6.300
+## 6     7 0.799  5.341
+## 7     8 0.784  5.021
+## 8     9 0.752  4.373
+## 9    10 0.736  4.054
+## 10   11 0.703  3.405
+## 12   13 0.685  3.074
+## 16   19 0.665  2.672
+## 18   21 0.642  2.259
+## 19   23 0.619  1.833
+## 25   32 0.584  1.216
+## 31   44 0.511  0.123
+## 33   47 0.426 -0.676
+## 34   51 0.320 -1.399</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># chlorhexidine group (not available)</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bc.median.ci</span>(fit_c, <span class="at">type =</span> <span class="st">&quot;linear&quot;</span>, <span class="at">table =</span> T)</span></code></pre></div>
+<pre><code>## Warning in max(surv.object$surv[surv.object$surv - 0.5 &lt;= 0]):
+## maxÀïËùÓÐµÄ²ÎÊý¶¼²»´æÔÚ£»»Ø¸²-Inf</code></pre>
+<pre><code>## Warning in min(surv.object$time[surv.object$surv ==
+## max(surv.object$surv[surv.object$surv - : minÀïËùÓÐµÄ²ÎÊý¶¼²»´æÔÚ; »Ø¸²Inf</code></pre>
+<pre><code>## $median
+## [1] Inf
+## 
+## $lower
+## [1] 42
+## 
+## $upper
+## [1] NA
+## 
+## $type
+## [1] &quot;linear&quot;
+## 
+## $alpha
+## [1] 0.05
+## 
+## $table
+##    time  surv      z
+## 1     2 0.964 22.930
+## 2     3 0.952 19.469
+## 3     4 0.940 17.063
+## 4     5 0.881 10.781
+## 6     8 0.869 10.009
+## 8    10 0.856  9.293
+## 9    11 0.844  8.638
+## 12   14 0.829  7.877
+## 14   16 0.812  7.085
+## 15   17 0.778  5.726
+## 16   18 0.740  4.522
+## 29   42 0.658  1.738</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bc.median.ci</span>(fit_c, <span class="at">type =</span> <span class="st">&quot;log&quot;</span>, <span class="at">table =</span> T)</span></code></pre></div>
+<pre><code>## Warning in max(surv.object$surv[surv.object$surv - 0.5 &lt;= 0]):
+## maxÀïËùÓÐµÄ²ÎÊý¶¼²»´æÔÚ£»»Ø¸²-Inf
+
+## Warning in max(surv.object$surv[surv.object$surv - 0.5 &lt;= 0]):
+## minÀïËùÓÐµÄ²ÎÊý¶¼²»´æÔÚ; »Ø¸²Inf</code></pre>
+<pre><code>## $median
+## [1] Inf
+## 
+## $lower
+## [1] 42
+## 
+## $upper
+## [1] NA
+## 
+## $type
+## [1] &quot;log&quot;
+## 
+## $alpha
+## [1] 0.05
+## 
+## $table
+##    time  surv     z
+## 1     2 0.964 5.105
+## 2     3 0.952 5.307
+## 3     4 0.940 5.420
+## 4     5 0.881 5.369
+## 6     8 0.869 5.288
+## 8    10 0.856 5.183
+## 9    11 0.844 5.062
+## 12   14 0.829 4.865
+## 14   16 0.812 4.611
+## 15   17 0.778 4.087
+## 16   18 0.740 3.501
+## 29   42 0.658 1.529</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bc.median.ci</span>(fit_c, <span class="at">type =</span> <span class="st">&quot;asin&quot;</span>, <span class="at">table =</span> T)</span></code></pre></div>
+<pre><code>## Warning in max(surv.object$surv[surv.object$surv - 0.5 &lt;= 0]):
+## maxÀïËùÓÐµÄ²ÎÊý¶¼²»´æÔÚ£»»Ø¸²-Inf
+
+## Warning in max(surv.object$surv[surv.object$surv - 0.5 &lt;= 0]):
+## minÀïËùÓÐµÄ²ÎÊý¶¼²»´æÔÚ; »Ø¸²Inf</code></pre>
+<pre><code>## $median
+## [1] Inf
+## 
+## $lower
+## [1] 42
+## 
+## $upper
+## [1] NA
+## 
+## $type
+## [1] &quot;asin&quot;
+## 
+## $alpha
+## [1] 0.05
+## 
+## $table
+##    time  surv      z
+## 1     2 0.964 10.912
+## 2     3 0.952 10.364
+## 3     4 0.940  9.879
+## 4     5 0.881  7.939
+## 6     8 0.869  7.599
+## 8    10 0.856  7.254
+## 9    11 0.844  6.915
+## 12   14 0.829  6.473
+## 14   16 0.812  5.974
+## 15   17 0.778  5.047
+## 16   18 0.740  4.138
+## 29   42 0.658  1.678</code></pre>
 </div>
 <div id="d" class="section level3">
 <h3>(d)</h3>
 <p>Find 95% confidence intervals for the survival (infection-free) functions at 10 days postadmission for both the chlorhexidine and povidone-iodine groups using the log transformed and arcsine transformed formulas.</p>
+<div id="arcsin-transformed" class="section level4">
+<h4>arcsin transformed</h4>
+<p>For povidone-iodine group</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;functions//arcsin_ci.R&quot;</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">arcsin.ci</span>(fit_p, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span></code></pre></div>
+<pre><code>##    time  surv sigma lower upper
+## 1     1 0.986 0.014 0.945 1.000
+## 2     3 0.943 0.029 0.877 0.985
+## 3     4 0.886 0.043 0.801 0.949
+## 4     5 0.871 0.046 0.784 0.939
+## 5     6 0.842 0.052 0.748 0.918
+## 6     7 0.799 0.060 0.697 0.884
+## 7     8 0.784 0.063 0.680 0.872
+## 8     9 0.752 0.069 0.644 0.847
+## 9    10 0.736 0.073 0.626 0.834
+## 10   11 0.703 0.080 0.588 0.806
+## 11   12 0.703 0.080 0.588 0.806
+## 12   13 0.685 0.084 0.569 0.791
+## 13   14 0.685 0.084 0.569 0.791
+## 14   16 0.685 0.084 0.569 0.791
+## 15   18 0.685 0.084 0.569 0.791
+## 16   19 0.665 0.089 0.545 0.775
+## 17   20 0.665 0.089 0.545 0.775
+## 18   21 0.642 0.095 0.519 0.757
+## 19   23 0.619 0.103 0.492 0.738
+## 20   25 0.619 0.103 0.492 0.738
+## 21   26 0.619 0.103 0.492 0.738
+## 22   27 0.619 0.103 0.492 0.738
+## 23   28 0.619 0.103 0.492 0.738
+## 24   29 0.619 0.103 0.492 0.738
+## 25   32 0.584 0.117 0.448 0.714
+## 26   34 0.584 0.117 0.448 0.714
+## 27   38 0.584 0.117 0.448 0.714
+## 28   39 0.584 0.117 0.448 0.714
+## 29   40 0.584 0.117 0.448 0.714
+## 30   43 0.584 0.117 0.448 0.714
+## 31   44 0.511 0.178 0.336 0.685
+## 32   46 0.511 0.178 0.336 0.685
+## 33   47 0.426 0.255 0.226 0.639
+## 34   51 0.320 0.385 0.113 0.574
+## 35   56 0.320 0.385 0.113 0.574
+## 36   60 0.320 0.385 0.113 0.574
+## 37   97 0.320 0.385 0.113 0.574</code></pre>
+<p>we can found that 95% confidence intervals for the survival functions at 10 days is 0.736(0.626, 0.834).</p>
+<p>For chlorhexidine group</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">arcsin.ci</span>(fit_c, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span></code></pre></div>
+<pre><code>##    time  surv sigma lower upper
+## 1     2 0.964 0.021 0.914 0.993
+## 2     3 0.952 0.024 0.897 0.987
+## 3     4 0.940 0.027 0.880 0.981
+## 4     5 0.881 0.040 0.804 0.941
+## 5     7 0.881 0.040 0.804 0.941
+## 6     8 0.869 0.042 0.789 0.932
+## 7     9 0.869 0.042 0.789 0.932
+## 8    10 0.856 0.045 0.774 0.923
+## 9    11 0.844 0.047 0.759 0.913
+## 10   12 0.844 0.047 0.759 0.913
+## 11   13 0.844 0.047 0.759 0.913
+## 12   14 0.829 0.050 0.740 0.903
+## 13   15 0.829 0.050 0.740 0.903
+## 14   16 0.812 0.054 0.719 0.891
+## 15   17 0.778 0.062 0.676 0.865
+## 16   18 0.740 0.072 0.630 0.836
+## 17   20 0.740 0.072 0.630 0.836
+## 18   21 0.740 0.072 0.630 0.836
+## 19   22 0.740 0.072 0.630 0.836
+## 20   23 0.740 0.072 0.630 0.836
+## 21   25 0.740 0.072 0.630 0.836
+## 22   27 0.740 0.072 0.630 0.836
+## 23   30 0.740 0.072 0.630 0.836
+## 24   31 0.740 0.072 0.630 0.836
+## 25   33 0.740 0.072 0.630 0.836
+## 26   35 0.740 0.072 0.630 0.836
+## 27   38 0.740 0.072 0.630 0.836
+## 28   41 0.740 0.072 0.630 0.836
+## 29   42 0.658 0.138 0.473 0.821
+## 30   46 0.658 0.138 0.473 0.821
+## 31   49 0.658 0.138 0.473 0.821
+## 32   56 0.658 0.138 0.473 0.821
+## 33   62 0.658 0.138 0.473 0.821
+## 34   67 0.658 0.138 0.473 0.821
+## 35   71 0.658 0.138 0.473 0.821
+## 36   76 0.658 0.138 0.473 0.821</code></pre>
+<p>we can found that 95% confidence intervals for the survival functions at 10 days is 0.856(0.774, 0.932).</p>
+</div>
+<div id="log-transformed" class="section level4">
+<h4>log transformed</h4>
+<p>Firstly, define a function to calculate</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>log.ci <span class="ot">&lt;-</span> <span class="cf">function</span>(surv.object, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">events.only =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#- Extract necessary values from survsurv.object object</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  surv.est  <span class="ot">&lt;-</span> surv.object<span class="sc">$</span>surv</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  sigma     <span class="ot">&lt;-</span> surv.object<span class="sc">$</span>std.err <span class="co">#This is sigma, not the SE of S(t)</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  surv.time <span class="ot">&lt;-</span> surv.object<span class="sc">$</span>time</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#- Get limits element wise</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  lims <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">time =</span> surv.object<span class="sc">$</span>time, <span class="at">surv =</span> surv.est,  <span class="at">sigma =</span> surv.object<span class="sc">$</span>std.err)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">qnorm</span>(<span class="dv">1</span> <span class="sc">-</span> alpha <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">*</span> sigma <span class="sc">/</span> <span class="fu">log</span>(surv.est))</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  lims<span class="sc">$</span>lower <span class="ot">&lt;-</span> surv.est<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>theta)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  lims<span class="sc">$</span>upper <span class="ot">&lt;-</span> surv.est<span class="sc">^</span>(theta)</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (events.only <span class="sc">==</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">round</span>(lims[<span class="fu">which</span>(surv.object<span class="sc">$</span>n.censor <span class="sc">==</span> <span class="dv">0</span>), ], <span class="dv">3</span>)) </span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">round</span>(lims, <span class="dv">3</span>))</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>For povidone-iodine group</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log.ci</span>(fit_p, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span></code></pre></div>
+<pre><code>##    time  surv sigma lower upper
+## 1     1 0.986 0.014 0.903 0.998
+## 2     3 0.943 0.029 0.855 0.978
+## 3     4 0.886 0.043 0.784 0.941
+## 4     5 0.871 0.046 0.767 0.931
+## 5     6 0.842 0.052 0.733 0.909
+## 6     7 0.799 0.060 0.684 0.876
+## 7     8 0.784 0.063 0.667 0.864
+## 8     9 0.752 0.069 0.632 0.838
+## 9    10 0.736 0.073 0.614 0.825
+## 10   11 0.703 0.080 0.577 0.798
+## 11   12 0.703 0.080 0.577 0.798
+## 12   13 0.685 0.084 0.558 0.783
+## 13   14 0.685 0.084 0.558 0.783
+## 14   16 0.685 0.084 0.558 0.783
+## 15   18 0.685 0.084 0.558 0.783
+## 16   19 0.665 0.089 0.534 0.766
+## 17   20 0.665 0.089 0.534 0.766
+## 18   21 0.642 0.095 0.509 0.748
+## 19   23 0.619 0.103 0.482 0.729
+## 20   25 0.619 0.103 0.482 0.729
+## 21   26 0.619 0.103 0.482 0.729
+## 22   27 0.619 0.103 0.482 0.729
+## 23   28 0.619 0.103 0.482 0.729
+## 24   29 0.619 0.103 0.482 0.729
+## 25   32 0.584 0.117 0.438 0.705
+## 26   34 0.584 0.117 0.438 0.705
+## 27   38 0.584 0.117 0.438 0.705
+## 28   39 0.584 0.117 0.438 0.705
+## 29   40 0.584 0.117 0.438 0.705
+## 30   43 0.584 0.117 0.438 0.705
+## 31   44 0.511 0.178 0.324 0.671
+## 32   46 0.511 0.178 0.324 0.671
+## 33   47 0.426 0.255 0.216 0.622
+## 34   51 0.320 0.385 0.110 0.555
+## 35   56 0.320 0.385 0.110 0.555
+## 36   60 0.320 0.385 0.110 0.555
+## 37   97 0.320 0.385 0.110 0.555</code></pre>
+<p>we can found that 95% confidence intervals for the survival functions at 10 days is 0.736(0.614, 0.825).</p>
+<p>For chlorhexidine group</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log.ci</span>(fit_c, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span></code></pre></div>
+<pre><code>##    time  surv sigma lower upper
+## 1     2 0.964 0.021 0.893 0.988
+## 2     3 0.952 0.024 0.878 0.982
+## 3     4 0.940 0.027 0.863 0.975
+## 4     5 0.881 0.040 0.790 0.934
+## 5     7 0.881 0.040 0.790 0.934
+## 6     8 0.869 0.042 0.776 0.925
+## 7     9 0.869 0.042 0.776 0.925
+## 8    10 0.856 0.045 0.761 0.916
+## 9    11 0.844 0.047 0.746 0.906
+## 10   12 0.844 0.047 0.746 0.906
+## 11   13 0.844 0.047 0.746 0.906
+## 12   14 0.829 0.050 0.728 0.895
+## 13   15 0.829 0.050 0.728 0.895
+## 14   16 0.812 0.054 0.707 0.883
+## 15   17 0.778 0.062 0.665 0.857
+## 16   18 0.740 0.072 0.619 0.828
+## 17   20 0.740 0.072 0.619 0.828
+## 18   21 0.740 0.072 0.619 0.828
+## 19   22 0.740 0.072 0.619 0.828
+## 20   23 0.740 0.072 0.619 0.828
+## 21   25 0.740 0.072 0.619 0.828
+## 22   27 0.740 0.072 0.619 0.828
+## 23   30 0.740 0.072 0.619 0.828
+## 24   31 0.740 0.072 0.619 0.828
+## 25   33 0.740 0.072 0.619 0.828
+## 26   35 0.740 0.072 0.619 0.828
+## 27   38 0.740 0.072 0.619 0.828
+## 28   41 0.740 0.072 0.619 0.828
+## 29   42 0.658 0.138 0.450 0.803
+## 30   46 0.658 0.138 0.450 0.803
+## 31   49 0.658 0.138 0.450 0.803
+## 32   56 0.658 0.138 0.450 0.803
+## 33   62 0.658 0.138 0.450 0.803
+## 34   67 0.658 0.138 0.450 0.803
+## 35   71 0.658 0.138 0.450 0.803
+## 36   76 0.658 0.138 0.450 0.803</code></pre>
+<p>we can found that 95% confidence intervals for the survival functions at 10 days is 0.856(0.761, 0.916).</p>
+</div>
 </div>
 <div id="e" class="section level3">
 <h3>(e)</h3>
 <p>Find 95% confidence bands for the infection-free functions over the range 8–20 days postinfection for both the chlorhexidine and povidone-iodine groups using the linear, log transformed, and arcsine transformed formulas.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;functions</span><span class="sc">\\</span><span class="st">conf_bands.R&quot;</span>)</span></code></pre></div>
+<div id="povidone-iodine" class="section level4">
+<h4>povidone-iodine</h4>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculate critical regions first</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.region</span>(fit_p, <span class="dv">8</span>, <span class="dv">20</span>)</span></code></pre></div>
+<pre><code>## Find critical regions in Klein and Moeschberger 2nd ed. (Appendix C.3a - C.4c)</code></pre>
+<pre><code>## $aL
+## [1] 0.13
+## 
+## $aU
+## [1] 0.23</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co">#2.6299</span></span></code></pre></div>
+<p>linear</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_p, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">2.6299</span>, </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;linear&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning linear-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.784 0.063 0.654 0.914
+## 2   9 0.752 0.069 0.615 0.890
+## 3  10 0.736 0.073 0.596 0.877
+## 4  11 0.703 0.080 0.555 0.850
+## 6  13 0.685 0.084 0.534 0.836
+## 10 19 0.665 0.089 0.509 0.820</code></pre>
+<p>arcsinetransformed</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_p, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">2.6299</span>, </span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;asin&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning asin-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.784 0.063 0.642 0.898
+## 2   9 0.752 0.069 0.605 0.875
+## 3  10 0.736 0.073 0.586 0.863
+## 4  11 0.703 0.080 0.548 0.837
+## 6  13 0.685 0.084 0.527 0.824
+## 10 19 0.665 0.089 0.503 0.809</code></pre>
+<p>log-transformed</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_p, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">2.6299</span>, </span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;log&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning log-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.784 0.063 0.618 0.884
+## 2   9 0.752 0.069 0.582 0.861
+## 3  10 0.736 0.073 0.565 0.849
+## 4  11 0.703 0.080 0.528 0.823
+## 6  13 0.685 0.084 0.508 0.810
+## 10 19 0.665 0.089 0.484 0.794</code></pre>
+</div>
+<div id="chlorhexidine" class="section level4">
+<h4>chlorhexidine</h4>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculate critical regions first</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.region</span>(fit_c, <span class="dv">8</span>, <span class="dv">20</span>)</span></code></pre></div>
+<pre><code>## Find critical regions in Klein and Moeschberger 2nd ed. (Appendix C.3a - C.4c)</code></pre>
+<pre><code>## $aL
+## [1] 0.06
+## 
+## $aU
+## [1] 0.16</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co">#(2.5374+2.4859+2.5678+2.5193)/4</span></span></code></pre></div>
+<p>linear</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_c, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">2.5276</span>, </span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;linear&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning linear-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.869 0.042 0.776 0.962
+## 3  10 0.856 0.045 0.760 0.953
+## 4  11 0.844 0.047 0.743 0.945
+## 7  14 0.829 0.050 0.723 0.935
+## 9  16 0.812 0.054 0.701 0.924
+## 10 17 0.778 0.062 0.655 0.901
+## 11 18 0.740 0.072 0.606 0.874</code></pre>
+<p>arcsinetransformed</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_c, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">2.5276</span>, </span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;asin&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning asin-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.869 0.042 0.763 0.947
+## 3  10 0.856 0.045 0.747 0.939
+## 4  11 0.844 0.047 0.731 0.930
+## 7  14 0.829 0.050 0.712 0.920
+## 9  16 0.812 0.054 0.690 0.910
+## 10 17 0.778 0.062 0.645 0.887
+## 11 18 0.740 0.072 0.597 0.861</code></pre>
+<p>log-transformed</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_c, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">2.5276</span>, </span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;log&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning log-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.869 0.042 0.740 0.937
+## 3  10 0.856 0.045 0.725 0.928
+## 4  11 0.844 0.047 0.710 0.919
+## 7  14 0.829 0.050 0.691 0.909
+## 9  16 0.812 0.054 0.669 0.898
+## 10 17 0.778 0.062 0.625 0.875
+## 11 18 0.740 0.072 0.577 0.848</code></pre>
+</div>
 </div>
 <div id="f" class="section level3">
 <h3>(f)</h3>
 <p>Find 95% HW confidence bands for the infection-free functions over the range 8–20 days postinfection for both the chlorhexidine and povidone-iodine.</p>
+<div id="povidone-iodine-1" class="section level4">
+<h4>povidone-iodine</h4>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculate critical regions first</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.region</span>(fit_p, <span class="dv">8</span>, <span class="dv">20</span>)</span></code></pre></div>
+<pre><code>## Find critical regions in Klein and Moeschberger 2nd ed. (Appendix C.3a - C.4c)</code></pre>
+<pre><code>## $aL
+## [1] 0.13
+## 
+## $aU
+## [1] 0.23</code></pre>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co">#0.8426</span></span></code></pre></div>
+<p>linear</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_p, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">0.8426</span>, </span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;linear&quot;</span>, <span class="at">method =</span> <span class="st">&quot;hw&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning linear-type confidence bands using hw method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.784 0.063 0.659 0.908
+## 2   9 0.752 0.069 0.630 0.875
+## 3  10 0.736 0.073 0.614 0.858
+## 4  11 0.703 0.080 0.583 0.823
+## 6  13 0.685 0.084 0.566 0.805
+## 10 19 0.665 0.089 0.545 0.784</code></pre>
+<p>arcsinetransformed</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_p, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">0.8426</span>, </span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;asin&quot;</span>, <span class="at">method =</span> <span class="st">&quot;hw&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning asin-type confidence bands using hw method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.784 0.063 0.648 0.894
+## 2   9 0.752 0.069 0.621 0.863
+## 3  10 0.736 0.073 0.607 0.848
+## 4  11 0.703 0.080 0.577 0.815
+## 6  13 0.685 0.084 0.561 0.797
+## 10 19 0.665 0.089 0.541 0.777</code></pre>
+<p>log-transformed</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_p, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">0.8426</span>, </span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;log&quot;</span>, <span class="at">method =</span> <span class="st">&quot;hw&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning log-type confidence bands using hw method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.784 0.063 0.626 0.881
+## 2   9 0.752 0.069 0.604 0.852
+## 3  10 0.736 0.073 0.591 0.837
+## 4  11 0.703 0.080 0.564 0.805
+## 6  13 0.685 0.084 0.549 0.788
+## 10 19 0.665 0.089 0.531 0.768</code></pre>
+</div>
+<div id="chlorhexidine-1" class="section level4">
+<h4>chlorhexidine</h4>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculate critical regions first</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.region</span>(fit_c, <span class="dv">8</span>, <span class="dv">20</span>)</span></code></pre></div>
+<pre><code>## Find critical regions in Klein and Moeschberger 2nd ed. (Appendix C.3a - C.4c)</code></pre>
+<pre><code>## $aL
+## [1] 0.06
+## 
+## $aU
+## [1] 0.16</code></pre>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co">#(0.9955+0.9919+0.9600+0.9549)/4</span></span></code></pre></div>
+<p>linear</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_c, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">0.975575</span>, </span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;linear&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning linear-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.869 0.042 0.833 0.905
+## 3  10 0.856 0.045 0.819 0.894
+## 4  11 0.844 0.047 0.805 0.883
+## 7  14 0.829 0.050 0.788 0.870
+## 9  16 0.812 0.054 0.769 0.856
+## 10 17 0.778 0.062 0.731 0.825
+## 11 18 0.740 0.072 0.688 0.792</code></pre>
+<p>arcsinetransformed</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_c, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">0.975575</span>, </span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;asin&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning asin-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.869 0.042 0.831 0.903
+## 3  10 0.856 0.045 0.817 0.892
+## 4  11 0.844 0.047 0.803 0.881
+## 7  14 0.829 0.050 0.786 0.868
+## 9  16 0.812 0.054 0.768 0.854
+## 10 17 0.778 0.062 0.729 0.823
+## 11 18 0.740 0.072 0.687 0.790</code></pre>
+<p>log-transformed</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbands.interval</span>(fit_c, <span class="dv">8</span>, <span class="dv">20</span>, <span class="at">crit.value=</span><span class="fl">0.975575</span>, </span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">type =</span> <span class="st">&quot;log&quot;</span>, <span class="at">method =</span> <span class="st">&quot;ep&quot;</span>)</span></code></pre></div>
+<pre><code>## Returning log-type confidence bands using ep method.</code></pre>
+<pre><code>##     t  surv    se    LL    UL
+## 1   8 0.869 0.042 0.828 0.901
+## 3  10 0.856 0.045 0.814 0.890
+## 4  11 0.844 0.047 0.800 0.879
+## 7  14 0.829 0.050 0.784 0.866
+## 9  16 0.812 0.054 0.765 0.851
+## 10 17 0.778 0.062 0.726 0.821
+## 11 18 0.740 0.072 0.684 0.788</code></pre>
+</div>
 </div>
 <div id="g" class="section level3">
 <h3>(g)</h3>
 <p>Based on the results above, how does the infection experience of the chlorhexidine and povidone-iodine groups compare?</p>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">survdiff</span>(<span class="fu">Surv</span>(T3, D3) <span class="sc">~</span> Z1, <span class="at">data=</span>burn)</span></code></pre></div>
+<pre><code>## Call:
+## survdiff(formula = Surv(T3, D3) ~ Z1, data = burn)
+## 
+##       N Observed Expected (O-E)^2/E (O-E)^2/V
+## Z1=0 70       28     21.4      2.07      3.79
+## Z1=1 84       20     26.6      1.66      3.79
+## 
+##  Chisq= 3.8  on 1 degrees of freedom, p= 0.05</code></pre>
+<p>As we can tell from the results above, chlorhexidine group has the higher estimated median survival probability than that of povidone-iodine group. All estimate methods provided consistent answers. In addition, the difference is significant according to the Log-Rank Test.</p>
 </div>
 </div>
 <div id="q4.7" class="section level2">
 <h2>Q4.7</h2>
 <p>Consider a hypothetical study of the mortality experience of diabetics. Thirty diabetic subjects are recruited at a clinic and followed until death or the end of the study. The subject’s age at entry into the study and their age at the end of study or death are given in the table below. Of interest is estimating the survival curve for a 60- or for a 70-year-old diabetic</p>
 <div id="a-1" class="section level3">
-<h3>a</h3>
+<h3>(a)</h3>
 <p>Since the diabetics needed to survive long enough from birth until the study began, the data is left truncated. Construct a table showing the number of subjects at risk, Y , as a function of age.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(df<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">time=</span><span class="fu">c</span>(<span class="dv">58</span><span class="sc">:</span><span class="dv">74</span>,<span class="dv">76</span><span class="sc">:</span><span class="dv">80</span>),</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">Y=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">12</span>,<span class="dv">13</span>,<span class="dv">14</span>,<span class="dv">13</span>,<span class="dv">12</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">9</span>,<span class="dv">7</span>,<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>(df<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">time=</span><span class="fu">c</span>(<span class="dv">58</span><span class="sc">:</span><span class="dv">74</span>,<span class="dv">76</span><span class="sc">:</span><span class="dv">80</span>),</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">Y=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">12</span>,<span class="dv">13</span>,<span class="dv">14</span>,<span class="dv">13</span>,<span class="dv">12</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">9</span>,<span class="dv">7</span>,<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)))</span></code></pre></div>
 <pre><code>##    time  Y
 ## 1    58  2
 ## 2    59  3
@@ -420,11 +1145,11 @@ h1,h2,h3,h4,h5,h6{
 ## 22   80  1</code></pre>
 </div>
 <div id="b-1" class="section level3">
-<h3>b</h3>
+<h3>(b)</h3>
 <p>Estimate the conditional survival function for the age of death of a diabetic patient who has survived to age 60.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">8</span>,<span class="dv">6</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">S_60 =</span> <span class="fu">cumprod</span>(n<span class="sc">/</span>Y))</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">8</span>,<span class="dv">6</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">S_60 =</span> <span class="fu">cumprod</span>(n<span class="sc">/</span>Y))</span></code></pre></div>
 <pre><code>##    time  Y  n      S_60
 ## 1    58  2  2 1.0000000
 ## 2    59  3  3 1.0000000
@@ -450,11 +1175,11 @@ h1,h2,h3,h4,h5,h6{
 ## 22   80  1  1 0.1088178</code></pre>
 </div>
 <div id="c-1" class="section level3">
-<h3>c</h3>
+<h3>(c)</h3>
 <p>Estimate the conditional survival function for the age of death of a diabetic patient who has survived to age 70.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">8</span>,<span class="dv">6</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">S_60 =</span> <span class="fu">cumprod</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">12</span>),(n<span class="sc">/</span>Y)[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)])))</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">10</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">8</span>,<span class="dv">6</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">S_60 =</span> <span class="fu">cumprod</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">12</span>),(n<span class="sc">/</span>Y)[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)])))</span></code></pre></div>
 <pre><code>##    time  Y  n      S_60
 ## 1    58  2  2 1.0000000
 ## 2    59  3  3 1.0000000
@@ -480,10 +1205,10 @@ h1,h2,h3,h4,h5,h6{
 ## 22   80  1  1 0.3256003</code></pre>
 </div>
 <div id="d-1" class="section level3">
-<h3>d</h3>
+<h3>(d)</h3>
 <p>Suppose an investigator incorrectly ignored the left truncation and simply treated the data as right censored. Repeat parts a–c</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(df<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">time=</span><span class="fu">c</span>(<span class="dv">58</span><span class="sc">:</span><span class="dv">74</span>,<span class="dv">76</span><span class="sc">:</span><span class="dv">80</span>),</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">Y=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">30</span>,<span class="dv">3</span>),<span class="dv">29</span>,<span class="dv">29</span>,<span class="dv">28</span>,<span class="dv">27</span>,<span class="dv">27</span>,<span class="dv">25</span>,<span class="dv">24</span>,<span class="dv">24</span>,<span class="dv">22</span>,<span class="dv">18</span>,<span class="dv">16</span>,<span class="dv">14</span>,<span class="dv">11</span>,<span class="dv">9</span>,<span class="dv">7</span>,<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>(df<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">time=</span><span class="fu">c</span>(<span class="dv">58</span><span class="sc">:</span><span class="dv">74</span>,<span class="dv">76</span><span class="sc">:</span><span class="dv">80</span>),</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">Y=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">30</span>,<span class="dv">3</span>),<span class="dv">29</span>,<span class="dv">29</span>,<span class="dv">28</span>,<span class="dv">27</span>,<span class="dv">27</span>,<span class="dv">25</span>,<span class="dv">24</span>,<span class="dv">24</span>,<span class="dv">22</span>,<span class="dv">18</span>,<span class="dv">16</span>,<span class="dv">14</span>,<span class="dv">11</span>,<span class="dv">9</span>,<span class="dv">7</span>,<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)))</span></code></pre></div>
 <pre><code>##    time  Y
 ## 1    58 30
 ## 2    59 30
@@ -507,9 +1232,9 @@ h1,h2,h3,h4,h5,h6{
 ## 20   78  4
 ## 21   79  3
 ## 22   80  1</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n=</span>Y<span class="sc">-</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">S_60 =</span> <span class="fu">cumprod</span>(n<span class="sc">/</span>Y))</span></code></pre></div>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n=</span>Y<span class="sc">-</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">S_60 =</span> <span class="fu">cumprod</span>(n<span class="sc">/</span>Y))</span></code></pre></div>
 <pre><code>##    time  Y  n      S_60
 ## 1    58 30 30 1.0000000
 ## 2    59 30 30 1.0000000
@@ -533,9 +1258,9 @@ h1,h2,h3,h4,h5,h6{
 ## 20   78  4  4 0.2462722
 ## 21   79  3  3 0.2462722
 ## 22   80  1  1 0.2462722</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n=</span>Y<span class="sc">-</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">S_60 =</span> <span class="fu">cumprod</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">12</span>),(n<span class="sc">/</span>Y)[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)])))</span></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n=</span>Y<span class="sc">-</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">S_60 =</span> <span class="fu">cumprod</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">12</span>),(n<span class="sc">/</span>Y)[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)])))</span></code></pre></div>
 <pre><code>##    time  Y  n      S_60
 ## 1    58 30 30 1.0000000
 ## 2    59 30 30 1.0000000
@@ -559,6 +1284,196 @@ h1,h2,h3,h4,h5,h6{
 ## 20   78  4  4 0.3694084
 ## 21   79  3  3 0.3694084
 ## 22   80  1  1 0.3694084</code></pre>
+</div>
+</div>
+<div id="q4.8" class="section level2">
+<h2>Q4.8</h2>
+<p>Table 1.7 reports the results of a study on the survival times of patients admitted to a psychiatric hospital. In this data set patients were admitted to the hospital at a random age and followed until death or the end of the study. Let X be the patient’s age at death. Note that the data we have on X is left truncated by the patient’s age at entry into the hospital and right censored by the end of the study.</p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(psych)</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>psych <span class="sc">%&gt;%</span></span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">end=</span>age<span class="sc">+</span>time) <span class="sc">%&gt;%</span> </span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(age) <span class="ot">-&gt;</span> df</span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">as.list</span>(<span class="fu">min</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))<span class="sc">:</span><span class="fu">max</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))),</span>
+<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x){<span class="fu">length</span>(<span class="fu">which</span>(df<span class="sc">$</span>age<span class="sc">&lt;=</span>x)) <span class="sc">-</span></span>
+<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">length</span>(<span class="fu">which</span>(df<span class="sc">$</span>end<span class="sc">&lt;</span>x))}) <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span>
+<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">as.list</span>(<span class="fu">min</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))<span class="sc">:</span><span class="fu">max</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))),</span>
+<span id="cb102-10"><a href="#cb102-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x){<span class="fu">length</span>(<span class="fu">which</span>(df<span class="sc">$</span>end<span class="sc">&lt;=</span>x <span class="sc">&amp;</span> df<span class="sc">$</span>death<span class="sc">==</span><span class="dv">1</span>))}) <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span>
+<span id="cb102-11"><a href="#cb102-11" aria-hidden="true" tabindex="-1"></a>dN <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">c</span>(<span class="dv">0</span>,N))</span>
+<span id="cb102-12"><a href="#cb102-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-13"><a href="#cb102-13" aria-hidden="true" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time=</span><span class="fu">min</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))<span class="sc">:</span><span class="fu">max</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end)),</span>
+<span id="cb102-14"><a href="#cb102-14" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Y=</span>Y,</span>
+<span id="cb102-15"><a href="#cb102-15" aria-hidden="true" tabindex="-1"></a>                    <span class="at">dN=</span>dN,</span>
+<span id="cb102-16"><a href="#cb102-16" aria-hidden="true" tabindex="-1"></a>                    <span class="at">S=</span><span class="fu">cumprod</span>((Y<span class="sc">-</span>dN)<span class="sc">/</span>Y))</span>
+<span id="cb102-17"><a href="#cb102-17" aria-hidden="true" tabindex="-1"></a>(table <span class="ot">&lt;-</span> table[<span class="fu">which</span>(table<span class="sc">$</span>Time <span class="sc">%in%</span> <span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end)), ])</span></code></pre></div>
+<pre><code>##    Time  Y dN         S
+## 1    19  1  0 1.0000000
+## 3    21  2  0 1.0000000
+## 6    24  3  0 1.0000000
+## 7    25  6  0 1.0000000
+## 10   28  7  0 1.0000000
+## 11   29  8  0 1.0000000
+## 12   30 10  0 1.0000000
+## 13   31 11  0 1.0000000
+## 14   32 13  0 1.0000000
+## 15   33 14  0 1.0000000
+## 17   35 16  0 1.0000000
+## 18   36 18  0 1.0000000
+## 23   41 19  0 1.0000000
+## 25   43 20  0 1.0000000
+## 27   45 21  0 1.0000000
+## 29   47 22  1 0.9545455
+## 30   48 22  0 0.9545455
+## 32   50 22  1 0.9111570
+## 33   51 22  0 0.9111570
+## 34   52 21  1 0.8677686
+## 37   55 21  0 0.8677686
+## 39   57 21  2 0.7851240
+## 40   58 19  0 0.7851240
+## 41   59 18  2 0.6978880
+## 43   61 16  2 0.6106520
+## 44   62 12  0 0.6106520
+## 45   63 11  1 0.5551382
+## 47   65  9  0 0.5551382
+## 49   67  8  1 0.4857459
+## 50   68  6  0 0.4857459
+## 51   69  5  2 0.2914475
+## 52   70  3  0 0.2914475
+## 53   71  2  0 0.2914475
+## 58   76  1  1 0.0000000</code></pre>
+<div id="a-2" class="section level3">
+<h3>(a)</h3>
+<p>Plot the number at risk, Yi , as a function of age.</p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(table, <span class="fu">aes</span>(<span class="at">x=</span>Time, <span class="at">y=</span>Y)) <span class="sc">+</span></span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="data:image/png;base64,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" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="b-2" class="section level3">
+<h3>(b)</h3>
+<p>Estimate the conditional survival function for a psychiatric patient who has survived to age 30 without entering a psychiatric hospital.</p>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>death[<span class="fu">which</span>(df<span class="sc">$</span>age<span class="sc">&lt;</span><span class="dv">30</span>)]<span class="ot">&lt;-</span><span class="dv">0</span></span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">as.list</span>(<span class="fu">min</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))<span class="sc">:</span><span class="fu">max</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))),</span>
+<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x){<span class="fu">length</span>(<span class="fu">which</span>(df<span class="sc">$</span>age<span class="sc">&lt;=</span>x)) <span class="sc">-</span></span>
+<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>                <span class="fu">length</span>(<span class="fu">which</span>(df<span class="sc">$</span>end<span class="sc">&lt;</span>x))}) <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span>
+<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">as.list</span>(<span class="fu">min</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))<span class="sc">:</span><span class="fu">max</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))),</span>
+<span id="cb105-7"><a href="#cb105-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x){<span class="fu">length</span>(<span class="fu">which</span>(df<span class="sc">$</span>end<span class="sc">&lt;=</span>x <span class="sc">&amp;</span> df<span class="sc">$</span>death<span class="sc">==</span><span class="dv">1</span>))}) <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span>
+<span id="cb105-8"><a href="#cb105-8" aria-hidden="true" tabindex="-1"></a>dN <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">c</span>(<span class="dv">0</span>,N))</span>
+<span id="cb105-9"><a href="#cb105-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-10"><a href="#cb105-10" aria-hidden="true" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time=</span><span class="fu">min</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end))<span class="sc">:</span><span class="fu">max</span>(<span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end)),</span>
+<span id="cb105-11"><a href="#cb105-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Y=</span>Y,</span>
+<span id="cb105-12"><a href="#cb105-12" aria-hidden="true" tabindex="-1"></a>                    <span class="at">dN=</span>dN,</span>
+<span id="cb105-13"><a href="#cb105-13" aria-hidden="true" tabindex="-1"></a>                    <span class="at">S=</span><span class="fu">cumprod</span>((Y<span class="sc">-</span>dN)<span class="sc">/</span>Y))</span>
+<span id="cb105-14"><a href="#cb105-14" aria-hidden="true" tabindex="-1"></a>(table <span class="ot">&lt;-</span> table[<span class="fu">which</span>(table<span class="sc">$</span>Time <span class="sc">%in%</span> <span class="fu">c</span>(df<span class="sc">$</span>age, df<span class="sc">$</span>end)), ])</span></code></pre></div>
+<pre><code>##    Time  Y dN         S
+## 1    19  1  0 1.0000000
+## 3    21  2  0 1.0000000
+## 6    24  3  0 1.0000000
+## 7    25  6  0 1.0000000
+## 10   28  7  0 1.0000000
+## 11   29  8  0 1.0000000
+## 12   30 10  0 1.0000000
+## 13   31 11  0 1.0000000
+## 14   32 13  0 1.0000000
+## 15   33 14  0 1.0000000
+## 17   35 16  0 1.0000000
+## 18   36 18  0 1.0000000
+## 23   41 19  0 1.0000000
+## 25   43 20  0 1.0000000
+## 27   45 21  0 1.0000000
+## 29   47 22  0 1.0000000
+## 30   48 22  0 1.0000000
+## 32   50 22  0 1.0000000
+## 33   51 22  0 1.0000000
+## 34   52 21  1 0.9523810
+## 37   55 21  0 0.9523810
+## 39   57 21  1 0.9070295
+## 40   58 19  0 0.9070295
+## 41   59 18  2 0.8062484
+## 43   61 16  2 0.7054674
+## 44   62 12  0 0.7054674
+## 45   63 11  1 0.6413340
+## 47   65  9  0 0.6413340
+## 49   67  8  1 0.5611672
+## 50   68  6  0 0.5611672
+## 51   69  5  2 0.3367003
+## 52   70  3  0 0.3367003
+## 53   71  2  0 0.3367003
+## 58   76  1  1 0.0000000</code></pre>
+</div>
+</div>
+<div id="q7.2" class="section level2">
+<h2>Q7.2</h2>
+<p>In Exercise 5 of Chapter 6, the survival experience of patients given an autologous transplant was compared to a postulated exponential survival rate with a hazard rate of 0.045. Using the data in Table 1.4 of Chapter 1, test the hypothesis that the hazard rate of these auto transplant patients is equal to 0.045 against the alternative that it is larger than 0.045 using the one-sample, log-rank test. Repeat this test using a weight function which gives heavier weight to departures early in time from this hazard rate.</p>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(alloauto)</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>timevar <span class="ot">&lt;-</span> alloauto<span class="sc">$</span>time[alloauto<span class="sc">$</span>type <span class="sc">==</span> <span class="dv">2</span>]</span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>delta   <span class="ot">&lt;-</span> alloauto<span class="sc">$</span>delta[alloauto<span class="sc">$</span>type <span class="sc">==</span> <span class="dv">2</span>]</span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>null_surv <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.045</span> <span class="sc">*</span> timevar) <span class="co">#Expected survival probability</span></span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a><span class="fu">survdiff</span>(<span class="fu">Surv</span>(timevar, delta) <span class="sc">~</span> <span class="fu">offset</span>(null_surv))</span></code></pre></div>
+<pre><code>## Call:
+## survdiff(formula = Surv(timevar, delta) ~ offset(null_surv))
+## 
+## Observed Expected        Z        p 
+##  28.0000  38.3992   1.6782   0.0933</code></pre>
+<p>With a p-value = <span class="math inline">\(0.00225\)</span>, we can reject the hypothesis that the population hazard rate is 0.045 with an <span class="math inline">\(\alpha = 0.05\)</span>.</p>
+</div>
+<div id="q7.4" class="section level2">
+<h2>Q7.4</h2>
+<p>In section 1.11, data from a study of the effect of ploidy on survival for patients with tumors of the tongue was reported.</p>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(tongue)</span></code></pre></div>
+<div id="a-3" class="section level3">
+<h3>(a)</h3>
+<p>Test the hypothesis that the survival rates of patients with cancer of the tongue are the same for patients with aneuploid and diploid tumors using the log-rank test.</p>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="fu">survdiff</span>(<span class="fu">Surv</span>(time, delta) <span class="sc">~</span> type, <span class="at">data =</span> tongue, <span class="at">rho =</span> <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## Call:
+## survdiff(formula = Surv(time, delta) ~ type, data = tongue, rho = 0)
+## 
+##         N Observed Expected (O-E)^2/E (O-E)^2/V
+## type=1 52       31     36.6     0.843      2.79
+## type=2 28       22     16.4     1.873      2.79
+## 
+##  Chisq= 2.8  on 1 degrees of freedom, p= 0.09</code></pre>
+<p>With a p-value = <span class="math inline">\(0.09\)</span>, we can not reject the hypothesis that the survival rates of patients with cancer of the tongue are the same for patients with aneuploid and diploid tumors with an <span class="math inline">\(\alpha = 0.05\)</span>.</p>
+</div>
+<div id="b-3" class="section level3">
+<h3>(b)</h3>
+<p>If primary interest is in detecting differences in survival rates between the two types of cancers which occur soon after the diagnosis of the cancer, repeat part a using a more appropriate test statistic.</p>
+<p>Since we would like to focus on the time soon after the diagnosis of the cancer, we will weight more at the beginning part. Then we chose Peto-Peto weights for comparison.</p>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Log-Rank Test with Peto-Peto Weight</span></span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a><span class="fu">survdiff</span>(<span class="fu">Surv</span>(time, delta) <span class="sc">~</span> type, <span class="at">data =</span> tongue, <span class="at">rho =</span> <span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## Call:
+## survdiff(formula = Surv(time, delta) ~ type, data = tongue, rho = 1)
+## 
+##         N Observed Expected (O-E)^2/E (O-E)^2/V
+## type=1 52     20.2     24.4     0.731       3.3
+## type=2 28     15.1     10.9     1.643       3.3
+## 
+##  Chisq= 3.3  on 1 degrees of freedom, p= 0.07</code></pre>
+<p>With a p-value = <span class="math inline">\(0.07\)</span>, we can not reject the hypothesis that the survival rates of patients with cancer of the tongue are the same for patients with aneuploid and diploid tumors with an <span class="math inline">\(\alpha = 0.05\)</span> and more weighting at time period soon after the diagnosis of the cancer.</p>
+</div>
+</div>
+<div id="q7.9" class="section level2">
+<h2>Q7.9</h2>
+<p>On our web page, data is reported on the death times of 863 kidney transplant patients (see section 1.7). Here, patients can be classified by race and sex into one of four groups</p>
+<div id="a-4" class="section level3">
+<h3>(a)</h3>
+<p>Test the hypothesis that there is no difference in survival between the four groups.</p>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(kidtran)</span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="fu">survdiff</span>(<span class="fu">Surv</span>(time, delta) <span class="sc">~</span> gender<span class="sc">+</span>race, <span class="at">data =</span> kidtran, <span class="at">rho =</span> <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## Call:
+## survdiff(formula = Surv(time, delta) ~ gender + race, data = kidtran, 
+##     rho = 0)
+## 
+##                    N Observed Expected (O-E)^2/E (O-E)^2/V
+## gender=1, race=1 432       73    69.25    0.2025    0.4013
+## gender=1, race=2  92       14    14.52    0.0184    0.0205
+## gender=2, race=1 280       39    47.39    1.4860    2.2531
+## gender=2, race=2  59       14     8.84    3.0173    3.2245
+## 
+##  Chisq= 4.7  on 3 degrees of freedom, p= 0.2</code></pre>
+<p>With a p-value = <span class="math inline">\(0.2\)</span>, we can not reject the hypothesis that there is no difference in survival between the four groups with an <span class="math inline">\(\alpha = 0.05\)</span>.</p>
 <div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
 
 </div>
