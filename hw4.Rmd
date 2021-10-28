@@ -78,7 +78,8 @@ Since two lines crossed, we know that these two cumulative hazard rates are not 
 ### (c)
 Provide estimates of the median time to infection and find 95% confidence intervals for the median time to infection for both the chlorhexidine and povidone-iodine groups using the linear, log-transformed, and arcsine formulas.
 
-Please note that here we modified the `bc_median_ci.R` function.
+Please note that here we modified the `bc.median.ci` function.
+
 ```{r}
 source("functions//bc_median_ci.R")
 # povidone-iodine group
@@ -154,6 +155,8 @@ we can found that 95% confidence intervals for the survival functions at 10 days
 
 ### (e)
 Find 95% confidence bands for the infection-free functions over the range 8–20 days postinfection for both the chlorhexidine and povidone-iodine groups using the linear, log transformed, and arcsine transformed formulas.
+
+Please note that here we modified the `cbands.interval` function.
 
 ```{r}
 source("functions\\conf_bands.R")

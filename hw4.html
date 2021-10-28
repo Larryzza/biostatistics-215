@@ -491,7 +491,7 @@ h1,h2,h3,h4,h5,h6{
 <div id="c" class="section level3">
 <h3>(c)</h3>
 <p>Provide estimates of the median time to infection and find 95% confidence intervals for the median time to infection for both the chlorhexidine and povidone-iodine groups using the linear, log-transformed, and arcsine formulas.</p>
-<p>Please note that here we modified the <code>bc_median_ci.R</code> function.</p>
+<p>Please note that here we modified the <code>bc.median.ci</code> function.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;functions//bc_median_ci.R&quot;</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># povidone-iodine group</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bc.median.ci</span>(fit_p, <span class="at">type =</span> <span class="st">&quot;linear&quot;</span>, <span class="at">table =</span> T)</span></code></pre></div>
@@ -905,6 +905,7 @@ h1,h2,h3,h4,h5,h6{
 <div id="e" class="section level3">
 <h3>(e)</h3>
 <p>Find 95% confidence bands for the infection-free functions over the range 8–20 days postinfection for both the chlorhexidine and povidone-iodine groups using the linear, log transformed, and arcsine transformed formulas.</p>
+<p>Please note that here we modified the <code>cbands.interval</code> function.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;functions</span><span class="sc">\\</span><span class="st">conf_bands.R&quot;</span>)</span></code></pre></div>
 <div id="povidone-iodine" class="section level4">
 <h4>povidone-iodine</h4>
